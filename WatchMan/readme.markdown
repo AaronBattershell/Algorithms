@@ -1,4 +1,4 @@
-<h3>Watch, Man!<\h3>
+<h3>Watch, Man!
 
 <a href="http://acm-ecna.ysu.edu/ProblemSet/ecna2014.pdf" target="_blank">Problem Discription <br/>
 <a href="http://acm-ecna.ysu.edu/ProblemSet/Problems/I/I.in" target="_blank">Problem Input <br/>
