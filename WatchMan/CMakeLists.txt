@@ -8,4 +8,6 @@ add_executable(watchman
 	main.cpp
 	graph.hpp
 	graph.cpp
+	bfs.hpp
+	bfs.cpp
 )

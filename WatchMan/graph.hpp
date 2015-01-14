@@ -4,35 +4,55 @@
 #include <iostream>
 #include <vector>
 
-template <class T>
-struct AdjListNode {
-	AdjListNode(T v, int w) 
-		: v(v), weight(w) { }
-
+template <typename T>
+struct Vertex {
+	Vertex(T v)
+		: v(v) { }
 	T v;
-	int weight;
 
 	T value() { return v; }
+	bool operator==(const Vertex<T> &other) const {
+		return this.v == other.v;
+  	}
+};
+
+template <typename T>
+struct Edge {
+	Edge(Vertex<T> v, int w) 
+		: v(v), weight(w) { }
+
+	Edge(Vertex<T> v)
+		: v(v), weight(0) { }
+
+	Vertex<T> v;
+	int weight;
+
+	Vertex<T> vertex() { return v; }
 	int capacity() { return weight; }
 };
 
-template <class T>
+template <typename T>
 struct AdjacencyList {
-	AdjacencyList(AdjListNode<T> h)
+	AdjacencyList(Vertex<T> h)
 		: head(h) { } 
 
-	AdjListNode<T> head;
+	Vertex<T> head;
 
-	std::vector< AdjListNode<T> > n;
-	std::vector< AdjListNode<T> > neighbors() { return n; }	
+	std::vector< Edge<T>* > n;
+	std::vector< Edge<T>* > neighbors() { return n; }	
 };
 
-template <class T>
+template <typename T>
 struct Graph {
-	void add_edge(AdjListNode<T> src, AdjListNode<T> dest);
+	Graph(std::vector< AdjacencyList<T> > vertices) 
+		: vertices(vertices), num_vert(vertices.size()) { }
+
+	bool contains(Vertex<T> vertex);
+	AdjacencyList<T>* find(Vertex<T> vertex);
+	void add_edge(Vertex<T> src, Vertex<T> dest, int capacity);
 	// number of vertices
-	int V;
-	std::vector< AdjacencyList<T> > lists;
+	int num_vert;
+	std::vector< AdjacencyList<T> > vertices;
 };
 
 #endif
