@@ -10,6 +10,6 @@ int main() {
 	Vint v0(0);
 	Vint v1(1);
 	Vint v2(2);
-
+        Vint v3(3);
 	return 0;
 }
