@@ -28,9 +28,6 @@ struct Edge {
 	Edge(Vertex<T> v, int w) 
 		: vertex(v), weight(w) { }
 
-	Edge(Vertex<T> v)
-		: vertex(v), weight(0) { }
-
 	Vertex<T> vertex;
 
 	int weight;
@@ -63,7 +60,8 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			//get the pair
 			auto vertex = this->find(src);
 			//add the edge to the adjacency list
-			vertex->second.push_back(dest);
+			Edge<T> e(dest, capacity);
+			vertex->second.push_back(e);
 		}
 	}
 
