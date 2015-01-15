@@ -1,5 +1,6 @@
 #include "graph.hpp"
 #include "bfs.hpp"
+#include "intersection.hpp"
 #include <string>
 
 using namespace std;
