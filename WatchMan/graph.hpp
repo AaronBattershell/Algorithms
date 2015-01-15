@@ -3,56 +3,77 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
+#include <list>
 
 template <typename T>
 struct Vertex {
 	Vertex(T v)
-		: v(v) { }
-	T v;
+		: value(v) { }
+	
+	T value;
 
-	T value() { return v; }
 	bool operator==(const Vertex<T> &other) const {
-		return this.v == other.v;
+		return this->value == other.value;
+  	}
+
+  	//required for inheriting from map
+  	bool operator<(const Vertex<T> &other) const {
+		return this->value < other.value;
   	}
 };
 
 template <typename T>
 struct Edge {
 	Edge(Vertex<T> v, int w) 
-		: v(v), weight(w) { }
+		: vertex(v), weight(w) { }
 
-	Edge(Vertex<T> v)
-		: v(v), weight(0) { }
+	Vertex<T> vertex;
 
-	Vertex<T> v;
 	int weight;
-
-	Vertex<T> vertex() { return v; }
 	int capacity() { return weight; }
 };
 
 template <typename T>
-struct AdjacencyList {
-	AdjacencyList(Vertex<T> h)
-		: head(h) { } 
+struct AdjacencyList : std::list< Edge<T> > {
 
-	Vertex<T> head;
-
-	std::vector< Edge<T>* > n;
-	std::vector< Edge<T>* > neighbors() { return n; }	
 };
 
 template <typename T>
-struct Graph {
-	Graph(std::vector< AdjacencyList<T> > vertices) 
-		: vertices(vertices), num_vert(vertices.size()) { }
+struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
+	//You can assume all the basic functions from map
 
-	bool contains(Vertex<T> vertex);
-	AdjacencyList<T>* find(Vertex<T> vertex);
-	void add_edge(Vertex<T> src, Vertex<T> dest, int capacity);
-	// number of vertices
-	int num_vert;
-	std::vector< AdjacencyList<T> > vertices;
+	//function to add an edge
+	void add_edge(Vertex<T> src, Vertex<T> dest, int capacity) {
+		//check that the vertex isnt already in the graph
+		//if its not
+		if(this->find(src) == this->end()) {
+			//add it to the graph
+			//add the dest to its adjacency list
+			Edge<T> e(dest, capacity);
+			AdjacencyList<T> al;
+			al.push_back(e);
+			this->emplace(src, al);
+		}
+		//if it is already in the graph then add the dest to its adjacency list
+		else {
+			//get the pair
+			auto vertex = this->find(src);
+			//add the edge to the adjacency list
+			Edge<T> e(dest, capacity);
+			vertex->second.push_back(e);
+		}
+	}
+
+	void print() {
+		for(auto v : *this) {
+			std::cout << '|' << v.first.value << "| -> ";
+			for(auto e : v.second) {
+				std::cout << e.vertex.value << '(' << e.capacity() << ") ->";
+			}
+			std::cout << '\n';
+		}
+	};
 };
 
 #endif
