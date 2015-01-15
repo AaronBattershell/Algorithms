@@ -11,5 +11,4 @@ add_executable(watchman
 	bfs.hpp
 	bfs.cpp
 	intersection.hpp
-	intersection.cpp
 )
