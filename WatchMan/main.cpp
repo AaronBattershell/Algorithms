@@ -25,5 +25,12 @@ int main() {
 
 	g.print();
 	
+	
+
+	// Sample line intersection demonstration
+	line line1(point(0, 0), point(10, 10));
+	line line2(point(0, 10), point(9.99, 10));
+	cout << endl << line1.intersect(line2) << endl;
+
 	return 0;
 }
