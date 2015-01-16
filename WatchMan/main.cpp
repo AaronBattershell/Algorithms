@@ -22,15 +22,8 @@ int main() {
 	g.add_edge(a, b, 3);
 	g.add_edge(a, c, 6);
 	g.add_edge(b, c, 2);
-	g.add_edge(c, d, 1);
 
-	// g.print();
-
-	// ordered_set<Vint> os;
-	// os.add(a);
-	// if(os.contains(a1)) {
-	// 	std::cout << "CONTAINS";
-	// }
+	g.print();
 
 	std::cout << "PATH\n";
 	auto path = bfs(g, b, d);
