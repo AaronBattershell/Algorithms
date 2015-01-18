@@ -10,6 +10,8 @@ add_executable(watchman
 	graph.cpp
 	bfs.hpp
 	bfs.cpp
+	parsing.hpp
+	parsing.cpp
 	intersection.hpp
 	intersection.cpp
 	points.hpp
