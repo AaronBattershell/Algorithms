@@ -12,4 +12,5 @@ add_executable(watchman
 	bfs.cpp
 	intersection.hpp
 	intersection.cpp
+	points.hpp
 )
