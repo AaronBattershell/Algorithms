@@ -4,6 +4,7 @@
 #include "parsing.hpp"
 #include <string>
 #include <unordered_set>
+#include <iostream>
 
 using namespace std;
 
@@ -57,6 +58,11 @@ int main(int argc, char* argv[]) {
 	auto path = bfs(g, a1, d1);
 
 	delete vf;
+
+	// Intersection Testing
+	//arc a(point(0, 1), point(1, 2), 0, -1);
+	//line b(point(-10, 1.5), point(10, 1.5));
+	//cout << a.intersect(b); 
 
 	return 0;
 }
