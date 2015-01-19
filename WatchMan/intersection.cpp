@@ -1,5 +1,6 @@
 #include "intersection.hpp"
 #include <utility>
+#include <iostream>
 using namespace std;
 
 point::point(double x, double y)
@@ -43,8 +44,11 @@ arc::arc(point one, point two, double dx, double dy)
 	center.y = lineToCenter2.slope * xInt + lineToCenter2.yInt;
 
 	radius = center.dist(one);
-	startAngle = atan2(one.y - center.y, one.x - center.x);
-	endAngle = atan2(two.y - center.y, two.x - center.x);
+	
+	startAngle = atan2((one.y - center.y) * PI / 180, (one.x - center.x) * PI / 180);
+	endAngle = atan2((two.y - center.y) * PI / 180, (two.x - center.x) * PI / 180);
+	startAngle += (startAngle < 0 ? 2 * PI : 0);
+	endAngle += (endAngle < 0 ? 2 * PI : 0);
 
 	if ((one.x - center.x) * dx - (one.y - center.y) * dy < 0) {
 		swap(startAngle, endAngle);
@@ -58,9 +62,9 @@ bool arc::intersect(line l) {
 	double C = pow(center.y, 2) - pow(radius, 2) + pow(center.x, 2) - 2 * l.yInt * center.y + pow(l.yInt, 2);
 	double D = pow(B, 2) - 4 * A * C;
 
-	/* Note: D > 0 : Zero intersection points
+	/* Note: D < 0 : Zero intersection points
 	 *       D == 0: One intersection point
-	 *       D < 0 : Two intersection points
+	 *       D > 0 : Two intersection points
 	*/
 	if (D < 0) {
 		return false;
@@ -68,9 +72,14 @@ bool arc::intersect(line l) {
 	if (D >= 0) {
 		double xInt = (-B + sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
-		double IntAngle = acos(xInt / radius);
+		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
+		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
 
-		//cout << xInt << ' ' << yInt << endl;
+		// Left for future debugging
+		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
+		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
+		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
+
 		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
@@ -78,9 +87,14 @@ bool arc::intersect(line l) {
 	if (D > 0) {
 		double xInt = (-B - sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
-		double IntAngle = acos(xInt / radius);
+		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
+		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
 
-		//cout << xInt << ' ' << yInt << endl;
+		// Left for future debugging
+		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
+		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
+		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
+		
 		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}

@@ -9,7 +9,6 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-
 	//read the option. can be -b(bfs), -f(ford-folkerson), -m (museum)
 	std::string opt;
 	if(argc < 3) {
@@ -55,6 +54,11 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "PATH\n";
 	auto path = bfs(g, a, d);
+
+	// Intersection Testing
+	//arc a(point(0, 1), point(1, 2), 0, -1);
+	//line b(point(-10, 1.5), point(10, 1.5));
+	//cout << a.intersect(b); 
 
 	return 0;
 }
