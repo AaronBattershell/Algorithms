@@ -4,14 +4,12 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <cassert>
+#include <queue>
+#include <stdlib.h>
 #include "graph.hpp"
 
-template <typename T>
-Graph<T> parse_bfs(std::string input) {
-	std::ifstream file(input);
-	//TODO: the rest of parsing for BFS files
-	Graph<T> result;
-	return result;
-}
+Graph<int> parse_bfs(std::string input, VertexFactory<int>* vf);
 
 #endif

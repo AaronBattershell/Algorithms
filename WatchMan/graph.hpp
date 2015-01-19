@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 #include <list>
 
 enum BFS_COLOR { WHITE, GRAY, BLACK };
@@ -12,28 +13,50 @@ constexpr int BFS_INFINITY = 2147483646;
 template <typename T>
 struct Vertex {
 	Vertex(T v)
-		: value(v), color(WHITE), d(BFS_INFINITY), pred(nullptr) { }
+		: value(v), color(WHITE), d(BFS_INFINITY), dtopred(BFS_INFINITY), pred(nullptr) { }
 
 	Vertex(const Vertex<T>& v)
-		: value(v.value), color(v.color), d(v.d), pred(v.pred) { }
+		: value(v.value), color(v.color), d(v.d), dtopred(v.dtopred), pred(v.pred) { }
 
 	Vertex() { }
+	~Vertex() { }
 	
 	T value;
 
 	//fields necessary for BFS
 	BFS_COLOR color;
-	int d;
+	int d; //number of edges to get there
 	Vertex<T>* pred;
+	int dtopred; //distance to pred
 
 	bool operator==(const Vertex<T> &other) const {
 		return this->value == other.value;
+  	}
+
+  	bool operator!=(const Vertex<T> &other) const {
+  		return not(this->value == other.value);
   	}
 
   	//required for inheriting from map
   	bool operator<(const Vertex<T> &other) const {
 		return this->value < other.value;
   	}
+};
+
+template <typename T>
+struct VertexFactory : std::vector< Vertex<T>* > {
+
+	~VertexFactory() { this->clear(); }
+
+	Vertex<T>* make_vertex(T value) {
+		for(auto v : *this) {
+			if(v->value == value)
+				return v;
+		}
+		Vertex<T>* v = new Vertex<T>(value);
+		this->push_back(v);
+		return v;
+	}
 };
 
 template <typename T>
@@ -45,16 +68,39 @@ struct Edge {
 
 	int weight;
 	int capacity() { return weight; }
+
+	bool operator==(const Edge<T> &other) const {
+		return this->vertex->value == other.vertex->value;
+  	}
+
+  	bool operator!=(const Vertex<T> &other) const {
+  		return not(*this == other);
+  	}
 };
 
 template <typename T>
 struct AdjacencyList : std::list< Edge<T> > {
 
+	bool contains(Edge<T> e) {
+		for(auto edge : *this) {
+			if(e == edge) {
+				return true;
+			}
+		}
+		return false;
+	}
 };
 
 template <typename T>
 struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 	//You can assume all the basic functions from map
+
+	void add_vertex(Vertex<T>* v) {
+		if(this->find(*v) == this->end()) {
+			AdjacencyList<T> al;
+			this->emplace(*v, al);
+		}
+	}
 
 	//function to add an edge
 	void add_edge(Vertex<T>* src, Vertex<T>* dest, int capacity) {
@@ -85,7 +131,9 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			auto vertex = this->find(*src);
 			//add the edge to the adjacency list
 			Edge<T> e(dest, capacity);
-			vertex->second.push_back(e);
+			//checks to see if the edge is already in the adjacency list
+			if(!vertex->second.contains(e))
+				vertex->second.push_back(e);
 		}
 	}
 

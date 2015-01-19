@@ -8,6 +8,7 @@
 #include <queue>
 #include <set>
 #include <cassert>
+#include <algorithm>
 
 namespace {
 
@@ -39,8 +40,6 @@ struct ordered_set {
 	std::vector<T> set() { return v; } 
 };
 
-}// namespace
-
 // s = src
 // v = destination
 template <typename T>
@@ -51,14 +50,51 @@ void print_path(Graph<T> graph, Vertex<T>* s, Vertex<T>* v) {
 		std::cout << "No path found\n";
 	else {
 		print_path(graph, s, v->pred);
-		std::cout << "->" << v->value;
+		std::cout << "-(" << v->dtopred << ")-> " << v->value;
 	}
 	std::cout << '\n';
 }
 
+template <typename T>
+void print_path(std::vector< Vertex<T>* > path) {
+	std::cout << "START ";
+	for(auto v : path) {
+		std::cout << "-(" << v->dtopred << ")-> ";
+		std::cout << '|' << v->value << "| ";
+	}
+	std::cout << " END\n";
+}
+
+template <typename T>
+std::vector< Vertex<T>* > store_path(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
+	using V = Vertex<T>;
+
+	std::vector<V*> path;
+
+	V* current = dest;
+	path.push_back(current);
+
+	while(*current != *src) {
+		if(current->pred == nullptr) {
+			//if we cant find a path return an empty vector
+			std::cout << "No path found\n";
+			std::vector<V*> empty;
+			return empty;
+		}
+		current = current->pred;
+		path.push_back(current);
+	}
+
+	std::reverse(path.begin(), path.end());
+
+	return path;
+}
+
+}// namespace
+
 //Algorithm taken from Intro to Algorithms 3e by Cormen, Lesierson, and Rivest
 template <typename T>
-std::vector< Vertex<T> > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
+std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 	std::cout << "==BFS==\n";
 	using V = Vertex<T>;
 
@@ -66,6 +102,7 @@ std::vector< Vertex<T> > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 
 	src->color = GRAY;
 	src->d = 0;
+	src->dtopred = 0;
 	q.push(src);
 
 	while(!q.empty()) {
@@ -78,40 +115,19 @@ std::vector< Vertex<T> > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 				edge.vertex->color = GRAY;
 				edge.vertex->d = u->d + 1;
 				edge.vertex->pred = u;
+				edge.vertex->dtopred = edge.capacity();
 				q.push(edge.vertex);
 			}
 		}
 		u->color = BLACK;
 	}
 	
-	print_path(graph, src, dest);
+	//print_path(graph, src, dest);
+	std::vector< Vertex<T>* > path = store_path(graph, src, dest);
+	print_path(path);
 
-	// ordered_set<V> visited;
-	// std::queue<V> q;
-	// q.push(src);
-
-	// while(!q.empty()) {
-	// 	V current = q.front();
-	// 	visited.add(current);
-	// 	q.pop();
-	// 	// std::cout << "CURRENt: " << current.value << '\n';
-	// 	//if we found the node we're looking for then return
-	// 	if(current == dest) {
-	// 		// std::cout << "FOUND: " << current.value << '\n';
-	// 		return visited.set();
-	// 	}
-	// 	//else look at the adjacent nodes
-	// 	auto adj_list = graph.get_adjacent_list(current);
-	// 	for(auto edge : adj_list) {
-	// 		if(!visited.contains(edge.vertex)) {
-	// 			// std::cout << "ENQ: " << edge.vertex.value << '\n';
-	// 			q.push(edge.vertex);
-	// 		}
-	// 	}
-	// }
 	//if not found return empty
-	std::vector<V> empty;
-	return empty;
+	return path;
 }
 
 #endif
