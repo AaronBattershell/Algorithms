@@ -47,8 +47,8 @@ arc::arc(point one, point two, double dx, double dy)
 	
 	startAngle = atan2((one.y - center.y) * PI / 180, (one.x - center.x) * PI / 180);
 	endAngle = atan2((two.y - center.y) * PI / 180, (two.x - center.x) * PI / 180);
-	startAngle += (startAngle < 0 ? 2 * PI : 0);
-	endAngle += (endAngle < 0 ? 2 * PI : 0);
+	//startAngle += (startAngle < 0 ? 2 * PI : 0);
+	//endAngle += (endAngle < 0 ? 2 * PI : 0);
 
 	if ((one.x - center.x) * dx - (one.y - center.y) * dy < 0) {
 		swap(startAngle, endAngle);
@@ -73,30 +73,36 @@ bool arc::intersect(line l) {
 		double xInt = (-B + sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
 		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
-		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
+		//IntAngle += (IntAngle < 0 ? 2 * PI : 0);
 
 		// Left for future debugging
 		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
 		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
 		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
 
-		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
-			return true;
+		if ((endAngle > startAngle && IntAngle >= startAngle && IntAngle <= endAngle) ||
+			(endAngle < startAngle && (IntAngle >= startAngle || IntAngle <= endAngle))) {
+			if (l.liesOnSegment(point(xInt, yInt))) {
+				return true;
+			}
 		}
 	}
 	if (D > 0) {
 		double xInt = (-B - sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
 		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
-		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
+		//IntAngle += (IntAngle < 0 ? 2 * PI : 0);
 
 		// Left for future debugging
 		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
 		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
 		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
 		
-		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
-			return true;
+		if ((endAngle > startAngle && IntAngle >= startAngle && IntAngle <= endAngle) ||
+			(endAngle < startAngle && (IntAngle >= startAngle || IntAngle <= endAngle))) {
+			if (l.liesOnSegment(point(xInt, yInt))) {
+				return true;
+			}
 		}
 	}
 
