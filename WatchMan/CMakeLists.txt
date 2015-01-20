@@ -7,7 +7,6 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(watchman
 	main.cpp
 	graph.hpp
-	graph.cpp
 	bfs.hpp
 	bfs.cpp
 	parsing.hpp
