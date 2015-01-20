@@ -59,10 +59,5 @@ int main(int argc, char* argv[]) {
 
 	delete vf;
 
-	// Intersection Testing
-	//arc a(point(0, 1), point(1, 2), 0, -1);
-	//line b(point(-10, 1.5), point(10, 1.5));
-	//cout << a.intersect(b); 
-
 	return 0;
 }
