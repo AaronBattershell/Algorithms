@@ -56,10 +56,11 @@ void print_path(Graph<T> graph, Vertex<T>* s, Vertex<T>* v) {
 }
 
 template <typename T>
-void print_path(std::vector< Vertex<T>* > &path) {
+void print_path(std::vector< Vertex<T>* >& path) {
 	std::cout << "START ";
 	for(auto v : path) {
-		std::cout << "-(" << v->pred->src << ")-> ";
+		if(v->pred)
+			std::cout << "-(" << v->pred->weight << ")-> ";
 		std::cout << '|' << v->value << "| ";
 	}
 	std::cout << " END\n";
@@ -72,7 +73,13 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 	std::vector<V*> path;
 
 	V* current = dest;
-	path.push_back(current);
+
+	if(*src == *dest) {
+		//if we cant find a path return an empty vector
+		std::cout << "No path found\n";
+		std::vector<V*> empty;
+		return empty;
+	}
 
 	while(*current != *src) {
 		if(current->pred == nullptr) {
@@ -81,14 +88,16 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 			std::vector<V*> empty;
 			return empty;
 		}
-		current = current->pred->src;
-		std::cout << "WEIGHT: " << current->pred->weight;
 		path.push_back(current);
+		current = current->pred->src;
 	}
+
+	//push the src as the last node
+	path.push_back(src);
 
 	std::reverse(path.begin(), path.end());
 
-	//print_path(path);
+	print_path(path);
 
 	return path;
 }
@@ -105,6 +114,7 @@ std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 
 	src->color = GRAY;
 	src->d = 0;
+	src->pred = nullptr;
 	q.push(src);
 
 	while(!q.empty()) {
@@ -124,11 +134,8 @@ std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 		}
 		u->color = BLACK;
 	}
-
-	std::cout << "Finished coloring \n";
 	
 	std::vector< Vertex<T>* > path = store_path(graph, src, dest);
-	//print_path(path);
 
 	//if not found return empty
 	return path;

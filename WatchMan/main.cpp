@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 		g.print();
 		std::cout << "===PATH===\n";
 		auto path = bfs(g, src, dest);
+		//print_path(path);
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
