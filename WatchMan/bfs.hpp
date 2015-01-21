@@ -50,23 +50,23 @@ void print_path(Graph<T> graph, Vertex<T>* s, Vertex<T>* v) {
 		std::cout << "No path found\n";
 	else {
 		print_path(graph, s, v->pred);
-		std::cout << "-(" << v->dtopred << ")-> " << v->value;
+		std::cout << "-(" << v->pred->weight << ")-> " << v->value;
 	}
 	std::cout << '\n';
 }
 
 template <typename T>
-void print_path(std::vector< Vertex<T>* > path) {
+void print_path(std::vector< Vertex<T>* > &path) {
 	std::cout << "START ";
 	for(auto v : path) {
-		std::cout << "-(" << v->dtopred << ")-> ";
+		std::cout << "-(" << v->pred->src << ")-> ";
 		std::cout << '|' << v->value << "| ";
 	}
 	std::cout << " END\n";
 }
 
 template <typename T>
-std::vector< Vertex<T>* > store_path(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
+std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>* dest) {
 	using V = Vertex<T>;
 
 	std::vector<V*> path;
@@ -81,11 +81,14 @@ std::vector< Vertex<T>* > store_path(Graph<T> graph, Vertex<T>* src, Vertex<T>* 
 			std::vector<V*> empty;
 			return empty;
 		}
-		current = current->pred;
+		current = current->pred->src;
+		std::cout << "WEIGHT: " << current->pred->weight;
 		path.push_back(current);
 	}
 
 	std::reverse(path.begin(), path.end());
+
+	//print_path(path);
 
 	return path;
 }
@@ -102,7 +105,6 @@ std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 
 	src->color = GRAY;
 	src->d = 0;
-	src->dtopred = 0;
 	q.push(src);
 
 	while(!q.empty()) {
@@ -114,17 +116,19 @@ std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 			if(edge->dest->color == WHITE && edge->weight > 0) {
 				edge->dest->color = GRAY;
 				edge->dest->d = u->d + 1;
-				edge->dest->pred = u;
-				edge->dest->dtopred = edge->capacity();
+				//pred stores the edge used to get to the node
+				// set the destinations pred equal to the current edge
+				edge->dest->pred = edge;
 				q.push(edge->dest);
 			}
 		}
 		u->color = BLACK;
 	}
+
+	std::cout << "Finished coloring \n";
 	
-	//print_path(graph, src, dest);
 	std::vector< Vertex<T>* > path = store_path(graph, src, dest);
-	print_path(path);
+	//print_path(path);
 
 	//if not found return empty
 	return path;

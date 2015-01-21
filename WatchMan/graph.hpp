@@ -11,12 +11,15 @@ enum BFS_COLOR { WHITE, GRAY, BLACK };
 constexpr int BFS_INFINITY = 2147483646;
 
 template <typename T>
+struct Edge;
+
+template <typename T>
 struct Vertex {
 	Vertex(T v)
-		: value(v), color(WHITE), d(BFS_INFINITY), dtopred(BFS_INFINITY), pred(nullptr) { }
+		: value(v), color(WHITE), d(BFS_INFINITY), pred(nullptr) { }
 
 	Vertex(const Vertex<T>& v)
-		: value(v.value), color(v.color), d(v.d), dtopred(v.dtopred), pred(v.pred) { }
+		: value(v.value), color(v.color), d(v.d), pred(v.pred) { }
 
 	Vertex() { }
 	~Vertex() { }
@@ -26,8 +29,7 @@ struct Vertex {
 	//fields necessary for BFS
 	BFS_COLOR color;
 	int d; //number of edges to get there
-	Vertex<T>* pred;
-	int dtopred; //distance to pred
+	Edge<T>* pred;
 
 	bool operator==(const Vertex<T> &other) const {
 		return this->value == other.value;
