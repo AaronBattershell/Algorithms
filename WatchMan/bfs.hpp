@@ -111,12 +111,12 @@ std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
 
 		auto adj_u = graph.get_adjacent_list(*u);
 		for(auto edge : adj_u) {
-			if(edge.vertex->color == WHITE && edge.weight > 0) {
-				edge.vertex->color = GRAY;
-				edge.vertex->d = u->d + 1;
-				edge.vertex->pred = u;
-				edge.vertex->dtopred = edge.capacity();
-				q.push(edge.vertex);
+			if(edge->dest->color == WHITE && edge->weight > 0) {
+				edge->dest->color = GRAY;
+				edge->dest->d = u->d + 1;
+				edge->dest->pred = u;
+				edge->dest->dtopred = edge->capacity();
+				q.push(edge->dest);
 			}
 		}
 		u->color = BLACK;

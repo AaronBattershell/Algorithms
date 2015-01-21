@@ -4,7 +4,6 @@ namespace {
 
 Graph<int> construct_graph(std::vector< std::queue<int> > input, VertexFactory<int>* vf) {
 	using Vint = Vertex<int>;
-	using Eint = Edge<int>;
 
 	Graph<int> result;
 
