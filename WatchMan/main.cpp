@@ -9,7 +9,6 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-
 	VertexFactory<int>* vf = new VertexFactory<int>();
 	Graph<int> g;
 
@@ -58,6 +57,11 @@ int main(int argc, char* argv[]) {
 	auto path = bfs(g, a1, d1);
 
 	delete vf;
+
+	// Test intersection detection code
+	//arc a(point(0, 1), point(1, 0), 0, 1);
+	//line b(point(-10, .5), point(1, .5));
+	//cout << a.intersect(b) << endl << endl;
 
 	return 0;
 }
