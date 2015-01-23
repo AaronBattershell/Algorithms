@@ -72,6 +72,9 @@ struct Edge {
 
 	int weight;
 	int capacity() { return weight; }
+	int active_flow; //the flow currently on the edge
+	int flow() { return active_flow; }
+	int residual_flow() { return (weight - active_flow); }
 
 	bool operator==(const Edge<T> &other) const {
 		return (*dest == *other.dest) && (*src == *other.src) && (weight == other.weight);
@@ -178,7 +181,8 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 		for(auto v : *this) {
 			std::cout << '|' << v.first.value << "| -> ";
 			for(auto e : v.second) {
-				std::cout << e->dest->value << '(' << e->capacity() << ") ->";
+				std::cout << e->dest->value << '(' 
+				<< e->residual_flow() << "/" << e->capacity() << ") ->";
 			}
 			std::cout << '\n';
 		}

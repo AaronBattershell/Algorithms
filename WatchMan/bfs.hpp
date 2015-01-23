@@ -97,8 +97,6 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 
 	std::reverse(path.begin(), path.end());
 
-	print_path(path);
-
 	return path;
 }
 
