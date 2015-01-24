@@ -64,7 +64,7 @@ struct VertexFactory : std::vector< Vertex<T>* > {
 template <typename T>
 struct Edge {
 	Edge(Vertex<T>* src, Vertex<T>* dest, int w) 
-		: src(src), dest(dest), weight(w) { }
+		: src(src), dest(dest), weight(w), active_flow(0) { }
 
 
 	Vertex<T>* dest; //the destination vertex
@@ -73,8 +73,9 @@ struct Edge {
 	int weight;
 	int capacity() { return weight; }
 	int active_flow; //the flow currently on the edge
+	int active_capacity() { return active_flow; }
 	int flow() { return active_flow; }
-	int residual_flow() { return (weight - active_flow); }
+	int residual_capacity() { return (weight - active_flow); }
 
 	bool operator==(const Edge<T> &other) const {
 		return (*dest == *other.dest) && (*src == *other.src) && (weight == other.weight);
@@ -120,6 +121,7 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 	//You can assume all the basic functions from map
 
 	EdgeFactory<T>* ef = new EdgeFactory<T>();
+	VertexFactory<T>* vf = new VertexFactory<T>();
 
 	void add_vertex(Vertex<T>* v) {
 		if(this->find(*v) == this->end()) {
@@ -182,7 +184,7 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			std::cout << '|' << v.first.value << "| -> ";
 			for(auto e : v.second) {
 				std::cout << e->dest->value << '(' 
-				<< e->residual_flow() << "/" << e->capacity() << ") ->";
+				<< e->active_capacity() << "/" << e->capacity() << ") ->";
 			}
 			std::cout << '\n';
 		}

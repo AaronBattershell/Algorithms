@@ -76,7 +76,7 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 
 	if(*src == *dest) {
 		//if we cant find a path return an empty vector
-		std::cout << "No path found\n";
+		std::cout << "BFS : WARNING : No path found\n";
 		std::vector<V*> empty;
 		return empty;
 	}
@@ -84,7 +84,7 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 	while(*current != *src) {
 		if(current->pred == nullptr) {
 			//if we cant find a path return an empty vector
-			std::cout << "No path found\n";
+			std::cout << "BFS : WARNING : No path found\n";
 			std::vector<V*> empty;
 			return empty;
 		}
@@ -105,7 +105,6 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 //Algorithm taken from Intro to Algorithms 3e by Cormen, Lesierson, and Rivest
 template <typename T>
 std::vector< Vertex<T>* > bfs(Graph<T> graph, Vertex<T>* src, Vertex<T>* dest) {
-	std::cout << "==BFS==\n";
 	using V = Vertex<T>;
 
 	std::queue<V*> q; //empty queue

@@ -16,16 +16,14 @@ int main(int argc, char* argv[]) {
 	using Eint = Edge<int>;
 	using al = AdjacencyList<Eint>;
 
-	VertexFactory<int>* vf = new VertexFactory<int>();
 	Graph<int> g;
+	VertexFactory<int>* vf = g.vf;
 
 	//read the option. can be -b(bfs), -f(ford-folkerson), -m (museum)
 	std::string opt;
 
 	opt = argv[1]; //option
 
-	// TODO: better input validation in parameters
-	// ACTUALLY PARSE THE FILES
 	if(opt == "-b") {
 		//check arg count
 		if(argc != 5) {
@@ -42,10 +40,12 @@ int main(int argc, char* argv[]) {
 		Vint* src = vf->make_vertex( atoi(argv[3]) );
 		Vint* dest = vf->make_vertex( atoi(argv[4]) );
 		std::cout << "===File Contents===\n";
-		g = parse_bfs(argv[2], vf);
+		//parse the file and put the vertices into the graph
+		parse_bfs(argv[2], g);
 		std::cout << "===Graph Adjacency List===\n";
 		g.print();
 		std::cout << "===PATH===\n";
+		std::cout << "==BFS==\n";
 		auto path = bfs(g, src, dest);
 		print_path(path);
 		std::cout << "===Min path===\n";
@@ -53,6 +53,15 @@ int main(int argc, char* argv[]) {
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
+		std:cout << "===File Contents===\n";
+		parse_bfs(argv[2], g);
+		std::cout << "===Graph Adjacency List===\n";
+		g.print();
+		std::cout << "Source nodes: ";
+		Vertex<int>* src = vf->make_vertex(get_src(g).value);
+		std::cout << "Sink nodes: ";
+		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
+		ford_fulkerson(g, src, sink);
 	}
 	else if(opt == "-m") {
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';

@@ -10,6 +10,6 @@
 #include <stdlib.h>
 #include "graph.hpp"
 
-Graph<int> parse_bfs(std::string input, VertexFactory<int>* vf);
+void parse_bfs(std::string input, Graph<int> &result);
 
 #endif
