@@ -1,5 +1,6 @@
 #include "ffs.hpp"
 
+namespace {
 
 //given a path, get the mininmum edge capacity along that path
 int min_capacity(std::vector< Vertex<int>* > path) {
@@ -58,12 +59,66 @@ Graph<int> construct_residual_graph(Graph<int> &g) {
 	return rGraph;
 }
 
+//takes the original graph and the residual graph
+//augments the original path using the residual graph
+void augment_path(Graph<int> &g, std::vector< Vertex<int>* > rPath) {
+	//once we've found a path in the rGraph, we need to change
+	//the path in the main graph
+	//for each edge in the graph
+	for(auto rVertex : rPath) {
+		//check for nullptr on pred
+		if(Edge<int>* rPred = rVertex->pred) {
+			//find the edge in the original graph
+			Edge<int>* edge = g.get_edge(*(rPred->src), *(rPred->dest));
+
+			//if the search returns a result (not nullptr)
+			if(edge) {
+				//if we find the forward edge
+				//add the active flow of the residual path edge
+				//to the original graph
+				edge->active_flow += rPred->active_flow;
+			}
+			//if search returns nullptr we know its a backwards edge
+			//search again with the dest and src switched
+			else {
+				edge = g.get_edge(*(rPred->dest), *(rPred->src));
+				//if we know its a backwards edge
+				if(edge) {
+					//subtract the active flow of the residual path edge
+					// from th edge in the original graph
+					edge->active_flow -= rPred->active_flow;
+				}
+			}
+		}
+	}
+}
+
+Graph<int> push_flow(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
+	
+	std::vector< Vertex<int>* > path = bfs(g, src, sink);
+	int min_cap = min_capacity(path);
+	for(auto vertex : path) {
+		if(vertex->pred)
+			vertex->pred->active_flow = min_cap;
+	}
+
+	return g;
+}
+
+} //namespace
+
 
 //takes a network, src, and sink and performs ford fulkerson on the graph
 // returns an int which is the max flow of the network
-int ford_fulkerson(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
-	std::vector< Vertex<int>* > path = bfs(g, src, sink);
-	Graph<int> graph = g;
+int ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
+	
+	//construct a residual graph thats initially the same as the original
+	Graph<int> rGraph = rGraph.deep_copy(g);
+	Vertex<int>* rSrc = rGraph.vf->make_vertex(get_src(rGraph).value);
+	Vertex<int>* rSink = rGraph.vf->make_vertex(get_sink(rGraph).value);
+
+	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
+
 	//find the shortest path (in terms of number of edges)
 	while(path.size() > 2) {
 		//path cannot be empty
@@ -81,18 +136,19 @@ int ford_fulkerson(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
 				vertex->pred->active_flow = min_cap;
 		}
 
-		std::cout << "===Augmented Network===\n";
-		graph.print();
+		//augment the original graph
+		std::cout << "===Augmented Path===\n";
+		augment_path(g, path);
+		g.print();
+		
 		//create a residual graph
 		std::cout << "===Residual Network===\n";
-		Graph<int> rGraph = construct_residual_graph(graph);
+		rGraph = construct_residual_graph(g);
 		rGraph.print();
 		
 		path = bfs(rGraph, 
 				   rGraph.vf->make_vertex(src->value),
 				   rGraph.vf->make_vertex(sink->value));
-
-		graph = rGraph;
 	}	
 	return 0;
 }

@@ -48,8 +48,6 @@ int main(int argc, char* argv[]) {
 		std::cout << "==BFS==\n";
 		auto path = bfs(g, src, dest);
 		print_path(path);
-		std::cout << "===Min path===\n";
-		std::cout << "MIN: " << min_capacity(path) << '\n';
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';

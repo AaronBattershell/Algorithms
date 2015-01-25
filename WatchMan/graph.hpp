@@ -123,6 +123,21 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 	EdgeFactory<T>* ef = new EdgeFactory<T>();
 	VertexFactory<T>* vf = new VertexFactory<T>();
 
+	Graph<T> deep_copy(const Graph<T> &g) {
+		Graph<T> ret;
+		EdgeFactory<T>* r_ef = ret.ef;
+		VertexFactory<T>* r_vf = ret.vf;
+
+		for(auto pair : g) {
+			Vertex<T>* new_src = r_vf->make_vertex(pair.first.value);
+			for(auto edge : pair.second) {
+				Vertex<T>* new_dest = r_vf->make_vertex(edge->dest->value);
+				ret.add_edge(new_src, new_dest, edge->weight);
+			}
+		}
+		return ret;
+	}
+
 	void add_vertex(Vertex<T>* v) {
 		if(this->find(*v) == this->end()) {
 			AdjacencyList<T> al;
@@ -176,7 +191,18 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			AdjacencyList<T> empty;
 			return empty;
 		}
+	}
 
+	Edge<T>* get_edge(Vertex<T> src, Vertex<T> dest) {
+		auto search = this->find(src);
+		if(search != this->end()) {
+			for(auto edge : search->second) {
+				if(*(edge->dest) == dest && edge->weight > 0) {
+					return edge;
+				}
+			}
+		}
+		return nullptr;
 	}
 
 	void print() {
