@@ -2,11 +2,10 @@
 
 namespace {
 
-Graph<int> construct_graph(std::vector< std::queue<int> > input, VertexFactory<int>* vf) {
+void construct_graph(std::vector< std::queue<int> > input, Graph<int> &result) {
 	using Vint = Vertex<int>;
-	using Eint = Edge<int>;
 
-	Graph<int> result;
+	VertexFactory<int> *vf = result.vf;
 
 	int count = 0;
 	for(auto line : input) {
@@ -33,8 +32,6 @@ Graph<int> construct_graph(std::vector< std::queue<int> > input, VertexFactory<i
 
 		count++;
 	}
-	
-	return result;
 }
 
 void print_graph_file(std::vector< std::queue<int> > input) {
@@ -52,7 +49,7 @@ void print_graph_file(std::vector< std::queue<int> > input) {
 
 }//namespace
 
-Graph<int> parse_bfs(std::string input, VertexFactory<int>* vf) {
+void parse_bfs(std::string input, Graph<int> &g) {
 	std::ifstream file(input);
 	std::string line;
 	std::vector< std::queue<int> > parsed_lines;
@@ -80,8 +77,5 @@ Graph<int> parse_bfs(std::string input, VertexFactory<int>* vf) {
 	}
 
 	print_graph_file(parsed_lines);
-
-	//TODO: the rest of parsing for BFS files
-	Graph<int> result = construct_graph(parsed_lines, vf);
-	return result;
+	construct_graph(parsed_lines, g);
 }

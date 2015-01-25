@@ -2,6 +2,7 @@
 #include "bfs.hpp"
 #include "intersection.hpp"
 #include "parsing.hpp"
+#include "ffs.hpp"
 #include <string>
 #include <unordered_set>
 #include <iostream>
@@ -9,52 +10,60 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	VertexFactory<int>* vf = new VertexFactory<int>();
+
+	//some aliases
+	using Vint = Vertex<int>;
+	using Eint = Edge<int>;
+	using al = AdjacencyList<Eint>;
+	
 	Graph<int> g;
+	VertexFactory<int>* vf = g.vf;
 
 	//read the option. can be -b(bfs), -f(ford-folkerson), -m (museum)
 	std::string opt;
-	if(argc < 3) {
-		std::cout << "Not enough parameters given.\n";
-		return -1;
-	}
 
 	opt = argv[1]; //option
 
-	// TODO: better input validation in parameters
-	// ACTUALLY PARSE THE FILES
 	if(opt == "-b") {
-		std::cout << "You have chosen BFS with file " << argv[2] << '\n';
+		//check arg count
+		if(argc != 5) {
+			std::cout << "Not enough parameters given.\n";
+			std::cout << "Found " << argc << " parameters. Need " << 5 << " parameters.\n";
+			return -1;
+		}
+
+		std::cout << "You have chosen BFS with file " << argv[2]
+				  << ". Finding path from " << argv[3] << " to " << argv[4] 
+				  << '\n';
+
+		// testing vertex factory is return old pointers above
+		Vint* src = vf->make_vertex( atoi(argv[3]) );
+		Vint* dest = vf->make_vertex( atoi(argv[4]) );
 		std::cout << "===File Contents===\n";
-		g = parse_bfs(argv[2], vf);
+		//parse the file and put the vertices into the graph
+		parse_bfs(argv[2], g);
+		std::cout << "===Graph Adjacency List===\n";
+		g.print();
+		std::cout << "===PATH===\n";
+		std::cout << "==BFS==\n";
+		auto path = bfs(g, src, dest);
+		print_path(path);
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
+		std:cout << "===File Contents===\n";
+		parse_bfs(argv[2], g);
+		std::cout << "===Graph Adjacency List===\n";
+		g.print();
+		std::cout << "Source nodes: ";
+		Vertex<int>* src = vf->make_vertex(get_src(g).value);
+		std::cout << "Sink nodes: ";
+		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
+		ford_fulkerson(g, src, sink);
 	}
 	else if(opt == "-m") {
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
 	}
-
-	using Vint = Vertex<int>;
-	using Eint = Edge<int>;
-	using al = AdjacencyList<Eint>;
-
-	Vint* a = vf->make_vertex(0);
-	Vint* b = vf->make_vertex(1);
-	Vint* c = vf->make_vertex(2);
-	Vint* d = vf->make_vertex(3);
-
-	// testing vertex factory is return old pointers above
-	Vint* a1 = vf->make_vertex(0);
-	Vint* d1 = vf->make_vertex(3);
-
-	//replicate the same graph as in the example on the assignment sheet
-
-	std::cout << "===Graph Adjacency List===\n";
-	g.print();
-
-	std::cout << "===PATH===\n";
-	auto path = bfs(g, a1, d1);
 
 	delete vf;
 

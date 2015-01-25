@@ -14,4 +14,6 @@ add_executable(watchman
 	intersection.hpp
 	intersection.cpp
 	points.hpp
+	ffs.hpp
+	ffs.cpp
 )

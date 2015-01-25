@@ -11,12 +11,15 @@ enum BFS_COLOR { WHITE, GRAY, BLACK };
 constexpr int BFS_INFINITY = 2147483646;
 
 template <typename T>
+struct Edge;
+
+template <typename T>
 struct Vertex {
 	Vertex(T v)
-		: value(v), color(WHITE), d(BFS_INFINITY), dtopred(BFS_INFINITY), pred(nullptr) { }
+		: value(v), color(WHITE), d(BFS_INFINITY), pred(nullptr) { }
 
 	Vertex(const Vertex<T>& v)
-		: value(v.value), color(v.color), d(v.d), dtopred(v.dtopred), pred(v.pred) { }
+		: value(v.value), color(v.color), d(v.d), pred(v.pred) { }
 
 	Vertex() { }
 	~Vertex() { }
@@ -26,8 +29,7 @@ struct Vertex {
 	//fields necessary for BFS
 	BFS_COLOR color;
 	int d; //number of edges to get there
-	Vertex<T>* pred;
-	int dtopred; //distance to pred
+	Edge<T>* pred;
 
 	bool operator==(const Vertex<T> &other) const {
 		return this->value == other.value;
@@ -61,16 +63,22 @@ struct VertexFactory : std::vector< Vertex<T>* > {
 
 template <typename T>
 struct Edge {
-	Edge(Vertex<T>* v, int w) 
-		: vertex(v), weight(w) { }
+	Edge(Vertex<T>* src, Vertex<T>* dest, int w) 
+		: src(src), dest(dest), weight(w), active_flow(0) { }
 
-	Vertex<T>* vertex;
+
+	Vertex<T>* dest; //the destination vertex
+	Vertex<T>* src;
 
 	int weight;
 	int capacity() { return weight; }
+	int active_flow; //the flow currently on the edge
+	int active_capacity() { return active_flow; }
+	int flow() { return active_flow; }
+	int residual_capacity() { return (weight - active_flow); }
 
 	bool operator==(const Edge<T> &other) const {
-		return this->vertex->value == other.vertex->value;
+		return (*dest == *other.dest) && (*src == *other.src) && (weight == other.weight);
   	}
 
   	bool operator!=(const Vertex<T> &other) const {
@@ -79,11 +87,28 @@ struct Edge {
 };
 
 template <typename T>
-struct AdjacencyList : std::list< Edge<T> > {
+struct EdgeFactory : std::vector< Edge<T>* > {
 
-	bool contains(Edge<T> e) {
+	~EdgeFactory() { this->clear(); }
+
+	Edge<T>* make_edge(Vertex<T>* src, Vertex<T>* dest, int w) {
 		for(auto edge : *this) {
-			if(e == edge) {
+			if(*(edge->src) == *src && *(edge->dest) == *dest && edge->weight == w)
+				return edge;
+		}
+		Edge<T>* e = new Edge<T>(src, dest, w);
+		this->push_back(e);
+		return e;
+	}
+};
+
+
+template <typename T>
+struct AdjacencyList : std::list< Edge<T>* > {
+
+	bool contains(Edge<T>* e) {
+		for(auto edge : *this) {
+			if(*e == *edge) {
 				return true;
 			}
 		}
@@ -94,6 +119,24 @@ struct AdjacencyList : std::list< Edge<T> > {
 template <typename T>
 struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 	//You can assume all the basic functions from map
+
+	EdgeFactory<T>* ef = new EdgeFactory<T>();
+	VertexFactory<T>* vf = new VertexFactory<T>();
+
+	Graph<T> deep_copy(const Graph<T> &g) {
+		Graph<T> ret;
+		EdgeFactory<T>* r_ef = ret.ef;
+		VertexFactory<T>* r_vf = ret.vf;
+
+		for(auto pair : g) {
+			Vertex<T>* new_src = r_vf->make_vertex(pair.first.value);
+			for(auto edge : pair.second) {
+				Vertex<T>* new_dest = r_vf->make_vertex(edge->dest->value);
+				ret.add_edge(new_src, new_dest, edge->weight);
+			}
+		}
+		return ret;
+	}
 
 	void add_vertex(Vertex<T>* v) {
 		if(this->find(*v) == this->end()) {
@@ -120,7 +163,7 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 		if(this->find(*src) == this->end()) {
 			//add it to the graph
 			//add the dest to its adjacency list
-			Edge<T> e(dest, capacity);
+			Edge<T>* e = ef->make_edge(src, dest, capacity);
 			AdjacencyList<T> al;
 			al.push_back(e);
 			this->emplace(*src, al);
@@ -130,7 +173,7 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			//get the pair
 			auto vertex = this->find(*src);
 			//add the edge to the adjacency list
-			Edge<T> e(dest, capacity);
+			Edge<T>* e = ef->make_edge(src, dest, capacity);
 			//checks to see if the edge is already in the adjacency list
 			if(!vertex->second.contains(e))
 				vertex->second.push_back(e);
@@ -148,14 +191,26 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 			AdjacencyList<T> empty;
 			return empty;
 		}
+	}
 
+	Edge<T>* get_edge(Vertex<T> src, Vertex<T> dest) {
+		auto search = this->find(src);
+		if(search != this->end()) {
+			for(auto edge : search->second) {
+				if(*(edge->dest) == dest && edge->weight > 0) {
+					return edge;
+				}
+			}
+		}
+		return nullptr;
 	}
 
 	void print() {
 		for(auto v : *this) {
 			std::cout << '|' << v.first.value << "| -> ";
 			for(auto e : v.second) {
-				std::cout << e.vertex->value << '(' << e.capacity() << ") ->";
+				std::cout << e->dest->value << '(' 
+				<< e->active_capacity() << "/" << e->capacity() << ") ->";
 			}
 			std::cout << '\n';
 		}
@@ -165,7 +220,7 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 		for(auto v : *this) {
 			std::cout << '|' << v.first.value <<  '(' << v.first.color << ',' << v.first.d << ')' << "| -> ";
 			for(auto e : v.second) {
-				std::cout << e.vertex->value << '(' << e.vertex->color << ',' << e.vertex->d << ") ->";
+				std::cout << e->dest->value << '(' << e->dest->color << ',' << e->dest->d << ") ->";
 			}
 			std::cout << '\n';
 		}
