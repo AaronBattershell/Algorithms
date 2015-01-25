@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 	using Vint = Vertex<int>;
 	using Eint = Edge<int>;
 	using al = AdjacencyList<Eint>;
-
+	
 	Graph<int> g;
 	VertexFactory<int>* vf = g.vf;
 
@@ -67,10 +67,10 @@ int main(int argc, char* argv[]) {
 
 	delete vf;
 
-	// Intersection Testing
-	//arc a(point(0, 1), point(1, 2), 0, -1);
-	//line b(point(-10, 1.5), point(10, 1.5));
-	//cout << a.intersect(b); 
+	// Test intersection detection code
+	//arc a(point(0, 1), point(1, 0), 0, 1);
+	//line b(point(-10, .5), point(1, .5));
+	//cout << a.intersect(b) << endl << endl;
 
 	return 0;
 }

@@ -21,14 +21,14 @@ bool line::liesOnSegment(point p) {
 
 // Returns true if two line segments intersect
 bool line::intersect(line l) {
-    double xInt = (yInt - l.yInt) / (l.slope - slope);
-    point lineInt(xInt, l.slope * xInt + l.yInt);
+	double xInt = (yInt - l.yInt) / (l.slope - slope);
+	point lineInt(xInt, l.slope * xInt + l.yInt);
 
 	return l.liesOnSegment(lineInt) && liesOnSegment(lineInt);
 }
 
 bool line::intersect(arc c) {
-    return c.intersect(*this);
+	return c.intersect(*this);
 }
 
 arc::arc(point one, point two, double dx, double dy) 
@@ -44,15 +44,6 @@ arc::arc(point one, point two, double dx, double dy)
 	center.y = lineToCenter2.slope * xInt + lineToCenter2.yInt;
 
 	radius = center.dist(one);
-	
-	startAngle = atan2((one.y - center.y) * PI / 180, (one.x - center.x) * PI / 180);
-	endAngle = atan2((two.y - center.y) * PI / 180, (two.x - center.x) * PI / 180);
-	startAngle += (startAngle < 0 ? 2 * PI : 0);
-	endAngle += (endAngle < 0 ? 2 * PI : 0);
-
-	if ((one.x - center.x) * dx - (one.y - center.y) * dy < 0) {
-		swap(startAngle, endAngle);
-	}
 }
 
 // Returns true if a line segment and arc intersect
@@ -69,33 +60,38 @@ bool arc::intersect(line l) {
 	if (D < 0) {
 		return false;
 	}
+	
+	line line1(point(one.x, one.y), point(two.x, two.y));
+
+	/*cout << "Line between arc: " << one.x << ' ' << one.y << ' ' << two.x << ' ' << two.y << endl;
+	cout << "Line slope: " << line1.slope << endl;
+	cout << "Dx Dy point: " << one.x + dx << ' ' << one.y + dy << endl << endl;*/
+
 	if (D >= 0) {
 		double xInt = (-B + sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
-		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
-		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
 
-		// Left for future debugging
-		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
-		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
-		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
+		line line2(point(xInt, yInt), point(one.x + dx, one.y + dy));
 
-		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
+		/*cout << "intersection point: " << xInt << ' ' << yInt << endl;
+		cout << "Firt point: " << endl;
+		cout << line1.intersect(line2) << endl;
+		cout << l.liesOnSegment(point(xInt, yInt)) << endl;*/
+		if (!line1.intersect(line2) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}
 	if (D > 0) {
 		double xInt = (-B - sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
-		double IntAngle = atan2((yInt - center.y), (xInt - center.x));
-		IntAngle += (IntAngle < 0 ? 2 * PI : 0);
-
-		// Left for future debugging
-		//cout << "Intersection point: " << xInt << ' ' << yInt << endl;
-		//cout << "This point lies on the intersecting line segment: " << l.liesOnSegment(point(xInt, yInt)) << endl;
-		//cout << IntAngle << " >= " << startAngle << " && " << IntAngle << " <= " << endAngle << endl << endl;
 		
-		if (IntAngle >= startAngle && IntAngle <= endAngle && l.liesOnSegment(point(xInt, yInt))) {
+		line line2(point(xInt, yInt), point(one.x + dx, one.y + dy));
+	
+		/*cout << "Intersection pont: " << xInt << ' ' << yInt << endl;
+		cout << "Second point: " << endl;
+		cout << line1.intersect(line2) << endl;
+		cout << l.liesOnSegment(point(xInt, yInt)) << endl;*/
+		if (!line1.intersect(line2) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}

@@ -26,7 +26,7 @@ struct line {
 	
 struct arc {
 	point one, two, center;
-	double dx, dy, radius, startAngle, endAngle;
+	double dx, dy, radius;
 	
 	arc(point one, point two, double dx, double dy);
 	bool intersect(line l);
