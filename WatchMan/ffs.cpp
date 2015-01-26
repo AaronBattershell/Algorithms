@@ -211,3 +211,36 @@ Vertex<int> get_sink(Graph<int> &g) {
 		std::cout << "Multiple sinks. Forming super sink. \n";
 	}
 }
+
+std::vector< Vertex<int>* > min_cut(Graph<int> &rGraph, 
+									Vertex<int>* src, 
+									Vertex<int>* sink) 
+{
+	//perform depth first search starting from src to sink
+	std::vector< Vertex<int>* > visited;
+	
+	// std::queue<V> q;
++	// q.push(src);
++
++	// while(!q.empty()) {
++	// 	V current = q.front();
++	// 	visited.add(current);
++	// 	q.pop();
++	// 	// std::cout << "CURRENt: " << current.value << '\n';
++	// 	//if we found the node we're looking for then return
++	// 	if(current == dest) {
++	// 		// std::cout << "FOUND: " << current.value << '\n';
++	// 		return visited.set();
++	// 	}
++	// 	//else look at the adjacent nodes
++	// 	auto adj_list = graph.get_adjacent_list(current);
++	// 	for(auto edge : adj_list) {
++	// 		if(!visited.contains(edge.vertex)) {
++	// 			// std::cout << "ENQ: " << edge.vertex.value << '\n';
++	// 			q.push(edge.vertex);
++	// 		}
++	// 	}
++	// }
+
+	//end and return the vertex visited
+}

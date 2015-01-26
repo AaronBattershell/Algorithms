@@ -20,3 +20,6 @@ Vertex<int> get_src(Graph<int> &g);
 //given a graph g, get the sink nodes for it
 Vertex<int> get_sink(Graph<int> &g);
 
+// returns the vertices in the min cut given a residual graph
+std::vector< Vertex<int>* > min_cut(Graph<int> &rGraph);
+
