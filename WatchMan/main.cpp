@@ -10,6 +10,15 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+	
+	if (argc < 2) {
+		std::cout << "Watch, Man! Program Parameters:" << std::endl;
+		std::cout << "\tBFS Test      : -b [FILENAME] [STARTNODE] [ENDNODE]" << std::endl;
+		std::cout << "\tFord-Folkerson: -f [FILENAME]" << std::endl;
+		std::cout << "\tMuseum Problem: -m [FILENAME]" << std::endl;
+		
+		return -1;	
+	}
 
 	//some aliases
 	using Vint = Vertex<int>;
@@ -63,14 +72,10 @@ int main(int argc, char* argv[]) {
 	}
 	else if(opt == "-m") {
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
+		
 	}
 
 	delete vf;
-
-	// Test intersection detection code
-	//arc a(point(0, 1), point(1, 0), 0, 1);
-	//line b(point(-10, .5), point(1, .5));
-	//cout << a.intersect(b) << endl << endl;
 
 	return 0;
 }
