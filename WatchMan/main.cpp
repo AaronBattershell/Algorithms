@@ -1,8 +1,8 @@
 #include "graph.hpp"
 #include "bfs.hpp"
-#include "intersection.hpp"
 #include "parsing.hpp"
 #include "ffs.hpp"
+#include "watchman.hpp"
 #include <string>
 #include <unordered_set>
 #include <iostream>
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
-		std:cout << "===File Contents===\n";
+		std::cout << "===File Contents===\n";
 		parse_bfs(argv[2], g);
 		std::cout << "===Graph Adjacency List===\n";
 		g.print();
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 	}
 	else if(opt == "-m") {
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
-		
+		watchman(argv[2]).solve();
 	}
 
 	delete vf;

@@ -1,12 +1,11 @@
 #include "inputData.h"
 
 int main(){
-
-    inputData d;
-
     std::vector < std::vector<int> > y,z;
-    std::string s = "/home/chuka/Documents/test1/ss.txt";
-    d.readtext1(s);
+    std::string s = "ss.txt";
+	
+    inputData d("ss.txt");    
+
     auto x = d.get_wallSetVector(s);
     y = d.get_paintVector(s);
     z = d.get_guardVector(s);

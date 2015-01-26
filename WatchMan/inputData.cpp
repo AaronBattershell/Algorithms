@@ -2,9 +2,16 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
+#include <cstdlib>
 
-        inputData::inputData()
-        {//ctor
+using namespace std;
+
+        inputData::inputData(std::string fileName) 
+		: fileName(fileName), infile(fileName) {
+		if (!infile.is_open()) {
+		        std::cout << "The entered file does not exist" << std::endl;
+		        exit(-1);
+		}
         }
 
         void inputData::set_wallSet(int v){
@@ -36,15 +43,11 @@
             return wall_EdgeArray;
         }
 
-void inputData::readtext1(std::string s){
-    std::ifstream infile(s.c_str());
-
-
+void inputData::readtext1(){
     std::vector<int> val;
     int temp ;
     std::string line;
     std::stringstream ss;
-
     std::getline(infile,line);
 
     if(line.size() != 0){
@@ -59,8 +62,7 @@ void inputData::readtext1(std::string s){
 
     this->set_wallSet(val[0]);
     this->set_painting(val[1]);
-    this->set_guards(val[2]);
-
+    this->set_guards(val[2]); 
 
     //number of walls...
     int noOfwall;
@@ -73,11 +75,14 @@ void inputData::readtext1(std::string s){
 
     this->set_wallNumber(noOfwall);
 
+	get_wallSetVector();
+	get_paintVector();
+	get_guardVector();
 }
 
 
 
-    std::vector< std::vector<std::vector<int> > > inputData::get_wallSetVector(std::string st){
+    std::vector< std::vector<std::vector<int> > > inputData::get_wallSetVector(){
         int noOfwall = this->get_wallNumber();
 
         wall_EdgeArray.push_back(noOfwall);
@@ -85,19 +90,12 @@ void inputData::readtext1(std::string s){
         int wallset_num = this->get_wallSet();
         std::vector<std::vector<std::vector<int> > > finish;
 
-
-        std::ifstream infile(st.c_str());
         int temp ;
         std::string line;
         std::stringstream ss;
         int dd=0;
 
         size_t f;
-
-        std::getline(infile,line);
-        std::getline(infile,line);
-
-
 
         for(int j=0;j < wallset_num;++j){
             std::vector<std::vector<int> >  wall_setV;
@@ -142,26 +140,19 @@ void inputData::readtext1(std::string s){
             }
         }
         set_wallNumber(dd);
-        return finish;
+	wall_setVector = finish;   
+
+	return finish;
     }
 
- std::vector< std::vector<int> > inputData::get_paintVector(std::string st){
+ std::vector< std::vector<int> > inputData::get_paintVector(){
 
-        std::ifstream infile(st.c_str());
         int paint_set = this->get_painting();
         int temp ;
         std::string line;
         std::stringstream ss;
 
-        std::getline(infile,line);
-        std::getline(infile,line);
-
         int loop = this->get_wallNumber();
-
-        for(int i= 0;i < loop; ++i){
-            std::getline(infile,line);
-        }
-
 
         for(int i = 0; i < paint_set; ++i){
 
@@ -182,23 +173,14 @@ void inputData::readtext1(std::string s){
     }
 
 
-    std::vector< std::vector<int> > inputData::get_guardVector(std::string st){
+    std::vector< std::vector<int> > inputData::get_guardVector(){
         int guard_set = this->get_guards();
-        std::ifstream infile(st.c_str());
 
         int temp ;
         std::string line;
         std::stringstream ss;
 
-        std::getline(infile,line);
-        std::getline(infile,line);
-
-
         int loop = this->get_wallNumber() + this->get_painting();
-
-        for(int i= 0;i < loop; ++i){
-            std::getline(infile,line);
-        }
 
         for(int i = 0; i < guard_set; ++i){
 
@@ -252,10 +234,23 @@ void inputData::print_guardSet(std::vector< std::vector<int> > gs){
 
 }
 
+bool inputData::get_next_problem() {
+	wall_EdgeArray.clear();
+	wall_setVector.clear();
+	paint_setVector.clear();
+	guard_setVector.clear();
 
+	wallSet = 0;
+	painting = 0;
+	guards = 0;
+	wallNumber = 0;
 
+	readtext1();
+
+	return (wallSet && painting && guards);
+}
 
 inputData::~inputData()
 {
-    //dtor
+    infile.close();
 }

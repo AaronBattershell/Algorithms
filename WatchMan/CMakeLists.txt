@@ -16,4 +16,8 @@ add_executable(watchman
 	points.hpp
 	ffs.hpp
 	ffs.cpp
+	watchman.hpp
+	watchman.cpp
+	inputData.h
+	inputData.cpp
 )
