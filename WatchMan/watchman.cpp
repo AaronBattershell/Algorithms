@@ -14,24 +14,34 @@ void watchman::solve() {
 
 		vector<line> straitWall;
 		vector<arc> curveWall;
+		Graph<int> g;
+		VertexFactory<int>* vf = g.vf;
 
 		createWalls(straitWall, curveWall);
-		findSightLines(straitWall, curveWall);
+		findSightLines(straitWall, curveWall, g, vf);
 	}
 }	
 
 void watchman::createWalls(vector<line> &straitWall, vector<arc> &curveWall) {
-	/*for (int i = 0; i < input.wall_setVector.size(); ++i) {
+	for (int i = 0; i < input.wall_setVector.size(); ++i) {
 		for (int n = 0; n < input.wall_setVector[i].size(); ++n) {
-			for (int j = 0; j < input.wall_setVector[i][n].size(); ++j) {
-				cout << input.wall_setVector[i][n][j] << ' ';
+			if (input.wall_setVector[i][n].size() == 2) { // Adding a wall
+				straitWall.push_back(line(
+					point(input.wall_setVector[i][n][0], input.wall_setVector[i][n][1]), 
+					point(input.wall_setVector[i][(n + 1) % input.wall_setVector[i].size()][0], 
+						input.wall_setVector[i][(n + 1) % input.wall_setVector[i].size()][1])));
 			}
-			cout << endl;
+			else { // Adding an arc
+				curveWall.push_back(arc(
+					point(input.wall_setVector[i][n][0], input.wall_setVector[i][n][1]), 
+					point(input.wall_setVector[i][(n + 1) % input.wall_setVector[i].size()][0], 
+						input.wall_setVector[i][(n + 1) % input.wall_setVector[i].size()][1]), 
+						input.wall_setVector[i][n][2], input.wall_setVector[i][n][3]));		
+			}
 		}
-		cout << endl;
-	}*/
+	}	
 }
 
-void watchman::findSightLines(vector<line> &straitWall, vector<arc> &curveWall) {
+void watchman::findSightLines(vector<line> &straitWall, vector<arc> &curveWall, Graph<int> &g, VertexFactory<int> *vf) {
 
 }
