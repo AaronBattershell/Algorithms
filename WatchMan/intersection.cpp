@@ -61,23 +61,15 @@ bool arc::intersect(line l) {
 		return false;
 	}
 	
-	line line1(point(one.x, one.y), point(two.x, two.y));
-
-	/*cout << "Line between arc: " << one.x << ' ' << one.y << ' ' << two.x << ' ' << two.y << endl;
-	cout << "Line slope: " << line1.slope << endl;
-	cout << "Dx Dy point: " << one.x + dx << ' ' << one.y + dy << endl << endl;*/
+	line arcPointsLine(point(one.x, one.y), point(two.x, two.y));
 
 	if (D >= 0) {
 		double xInt = (-B + sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
 
-		line line2(point(xInt, yInt), point(one.x + dx, one.y + dy));
+		line dxdyIntLine(point(xInt, yInt), point(one.x + dx, one.y + dy));
 
-		/*cout << "intersection point: " << xInt << ' ' << yInt << endl;
-		cout << "Firt point: " << endl;
-		cout << line1.intersect(line2) << endl;
-		cout << l.liesOnSegment(point(xInt, yInt)) << endl;*/
-		if (!line1.intersect(line2) && l.liesOnSegment(point(xInt, yInt))) {
+		if (!arcPointsLine.intersect(dxdyIntLine) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}
@@ -85,13 +77,9 @@ bool arc::intersect(line l) {
 		double xInt = (-B - sqrt(D)) / 2 * A;
 		double yInt = l.slope * xInt + l.yInt;
 		
-		line line2(point(xInt, yInt), point(one.x + dx, one.y + dy));
+		line dxdyIntLine(point(xInt, yInt), point(one.x + dx, one.y + dy));
 	
-		/*cout << "Intersection pont: " << xInt << ' ' << yInt << endl;
-		cout << "Second point: " << endl;
-		cout << line1.intersect(line2) << endl;
-		cout << l.liesOnSegment(point(xInt, yInt)) << endl;*/
-		if (!line1.intersect(line2) && l.liesOnSegment(point(xInt, yInt))) {
+		if (!arcPointsLine.intersect(dxdyIntLine) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}

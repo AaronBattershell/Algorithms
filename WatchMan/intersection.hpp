@@ -3,8 +3,6 @@
 
 #include <cmath>
 
-#define PI 3.14159
-
 struct arc;
 
 struct point {
