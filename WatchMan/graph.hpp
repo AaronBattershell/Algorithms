@@ -114,6 +114,15 @@ struct AdjacencyList : std::list< Edge<T>* > {
 		}
 		return false;
 	}
+	
+	bool contains(Vertex<T>* v) {
+		for(auto edge : *this) {
+			if(v->value == edge->dest->value) {
+				return true;
+			}
+		}
+		return false;
+	}
 };
 
 template <typename T>

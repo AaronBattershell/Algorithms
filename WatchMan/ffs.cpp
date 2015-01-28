@@ -105,10 +105,11 @@ Graph<int> push_flow(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
 	return g;
 }
 
-int calc_min_cut(std::vector< Vertex<int>* > S, 
-				 std::vector< Vertex<int>* > T) {
-
-
+int calc_min_cut(Graph<int> g,
+			     std::vector< Edge<int>* > S, 
+				 std::vector< Edge<int>* > T) 
+{
+	int min_cut = 0;				 
 }
 
 int get_min_cut(Graph<int> &graph, 
@@ -141,15 +142,20 @@ int get_min_cut(Graph<int> &graph,
 
 	std::vector< Vertex<int>* > tempS = visited.set();
 
-	std::vector< Vertex<int>* > S;
-	std::vector< Vertex<int>* > T;
+	std::vector< Edge<int>* > S;
+	std::vector< Edge<int>* > T;
 	
-	for(auto vg : *graph.vf) {
+	//iterate over all the edges inside the graph
+	for(auto edge : *graph.ef) {
 		for(auto vs : tempS) {
-			
-			S.push_back(graph.get_vertex(vs->value));
+			//if the src of the edge is part of S
+			if(*(edge->src) == *vs) {
+				S.push_back(edge);
+			}
 		} 
-	}	
+	}
+	
+	int min_cut = calc_min_cut(graph, S, T);
 
 	return 0;
 }
