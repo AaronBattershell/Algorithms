@@ -3,7 +3,7 @@
 #include "bfs.hpp"
 
 //performs ford-fulkerson on one src and one sink
-int ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink);
+Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink);
 
 //if a network has more than one src, add a super source to the graph
 //input is a graph representing a network and a set of srcs
