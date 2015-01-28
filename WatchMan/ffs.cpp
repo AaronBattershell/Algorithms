@@ -142,9 +142,13 @@ int get_min_cut(Graph<int> &graph,
 	std::vector< Vertex<int>* > tempS = visited.set();
 
 	std::vector< Vertex<int>* > S;
-
-	for(auto v : tempS) {
-		graph.get_vertex(5);
+	std::vector< Vertex<int>* > T;
+	
+	for(auto vg : *graph.vf) {
+		for(auto vs : tempS) {
+			
+			S.push_back(graph.get_vertex(vs->value));
+		} 
 	}	
 
 	return 0;
