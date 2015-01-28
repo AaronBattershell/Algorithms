@@ -242,9 +242,16 @@ Vertex<int> get_src(Graph<int> &g) {
 	}
 	else {
 		std::cout << "Multiple sources. Forming super source. \n";
+
+		// Assigne all source nodes a super source
+		Vertex<int> *super_source = g.vf->make_vertex(-1);
+		for (auto i : V) {
+			g.add_edge(super_source, &i, 10000001);	
+		}
+
+		return *super_source;
 	}
 }
-
 
 Vertex<int> get_sink(Graph<int> &g) {
 	//find the sink in a graph
@@ -268,5 +275,13 @@ Vertex<int> get_sink(Graph<int> &g) {
 	}
 	else {
 		std::cout << "Multiple sinks. Forming super sink. \n";
+
+		// Assigne all sinks a super sink
+		Vertex<int> *super_sink = g.vf->make_vertex(-2);
+		for (auto i : sinks) {
+			g.add_edge(&i, super_sink, 10000001);	
+		}
+
+		return *super_sink;
 	}
 }
