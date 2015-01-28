@@ -205,6 +205,15 @@ struct Graph : std::map< Vertex<T>, AdjacencyList<T> > {
 		return nullptr;
 	}
 
+	Vertex<int>* get_vertex(T value) {
+		for(auto v : *vf) {
+			if(v->value == value) {
+				return v;
+			}
+		}
+		return nullptr;
+	}
+
 	void print() {
 		for(auto v : *this) {
 			std::cout << '|' << v.first.value << "| -> ";

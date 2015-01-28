@@ -105,12 +105,61 @@ Graph<int> push_flow(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
 	return g;
 }
 
+int calc_min_cut(std::vector< Vertex<int>* > S, 
+				 std::vector< Vertex<int>* > T) {
+
+
+}
+
+int get_min_cut(Graph<int> &graph, 
+				Graph<int> &rGraph, 
+				Vertex<int>* src, 
+				Vertex<int>* dest) 
+{
+	using V = Vertex<int>*;
+	//perform depth first search starting from src to sink
+	ordered_set< Vertex<int>* > visited;
+	
+	std::queue<V> q;
+	q.push(src);
+	while(!q.empty()) {
+		V current = q.front();
+		visited.add(current);
+		q.pop();
+		//if we found the node we're looking for then return
+		if(current == dest) {
+			break;
+		}
+		//else look at the adjacent nodes
+		auto adj_list = rGraph.get_adjacent_list(*current);
+		for(auto edge : adj_list) {
+			if(!visited.contains(edge->dest)) {
+				q.push(edge->dest);
+			}
+		}
+	}
+
+	std::vector< Vertex<int>* > tempS = visited.set();
+
+	std::vector< Vertex<int>* > S;
+	std::vector< Vertex<int>* > T;
+	
+	for(auto vg : *graph.vf) {
+		for(auto vs : tempS) {
+			
+			S.push_back(graph.get_vertex(vs->value));
+		} 
+	}	
+
+	return 0;
+}
+
 } //namespace
 
 
 //takes a network, src, and sink and performs ford fulkerson on the graph
 // returns an int which is the max flow of the network
-int ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
+Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	
 	//construct a residual graph thats initially the same as the original
 	Graph<int> rGraph = rGraph.deep_copy(g);
@@ -128,7 +177,7 @@ int ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	
 		//min capacity cannot be zero at this point otherwise there is no path
 		if(min_cap == 0)
-			return 0;
+			return g;
 		
 		//adjust the flow going along each edge based on the min_cap
 		for(auto vertex : path) {
@@ -149,8 +198,12 @@ int ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 		path = bfs(rGraph, 
 				   rGraph.vf->make_vertex(src->value),
 				   rGraph.vf->make_vertex(sink->value));
-	}	
-	return 0;
+	}
+
+	//get the min cut from the residual graph
+	int min_cut = get_min_cut(g, rGraph, src, sink);
+
+	return g;
 }
 
 Vertex<int> get_src(Graph<int> &g) {
