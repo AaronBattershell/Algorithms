@@ -2,6 +2,34 @@
 
 namespace {
 
+template <typename T>
+struct ordered_set {
+	std::set<T> s;
+	std::vector<T> v;
+	// inserts into the vector iff you can insert into the set
+	bool add(T elem) {
+		auto res = s.insert(elem);
+		if(res.second) {
+			v.push_back(elem);
+			return true;
+		}
+		if(!res.second) {
+			return false;
+		}
+	}
+
+	//returns true iff contains the elem
+	bool contains(T elem) {
+		auto search = s.find(elem);
+		if(search != s.end())
+			return true;
+		else
+			return false;
+	}
+
+	std::vector<T> set() { return v; } 
+};
+
 //given a path, get the mininmum edge capacity along that path
 int min_capacity(std::vector< Vertex<int>* > path) {
 	
@@ -105,59 +133,73 @@ Graph<int> push_flow(Graph<int> &g, Vertex<int>* src, Vertex<int>* sink) {
 	return g;
 }
 
-int calc_min_cut(Graph<int> g,
-			     std::vector< Edge<int>* > S, 
-				 std::vector< Edge<int>* > T) 
-{
-	int min_cut = 0;				 
-}
-
 int get_min_cut(Graph<int> &graph, 
 				Graph<int> &rGraph, 
 				Vertex<int>* src, 
 				Vertex<int>* dest) 
 {
-	using V = Vertex<int>*;
+	using V = Vertex<int>;
 	//perform depth first search starting from src to sink
-	ordered_set< Vertex<int>* > visited;
+	ordered_set< Vertex<int> > visited;
 	
 	std::queue<V> q;
-	q.push(src);
+	q.push(*src);
 	while(!q.empty()) {
 		V current = q.front();
 		visited.add(current);
 		q.pop();
 		//if we found the node we're looking for then return
-		if(current == dest) {
+		if(current == *dest) {
 			break;
 		}
 		//else look at the adjacent nodes
-		auto adj_list = rGraph.get_adjacent_list(*current);
+		auto adj_list = rGraph.get_adjacent_list(current);
 		for(auto edge : adj_list) {
-			if(!visited.contains(edge->dest)) {
-				q.push(edge->dest);
+			if(!visited.contains(*(edge->dest))) {
+				q.push(*edge->dest);
 			}
 		}
 	}
 
-	std::vector< Vertex<int>* > tempS = visited.set();
+	std::cout << "===Min Cut===\n";
+	std::cout << "Vertices in S: ";
 
-	std::vector< Edge<int>* > S;
-	std::vector< Edge<int>* > T;
+	std::set< Vertex<int> > tempS;
+
+	for(auto v : visited.set()) {
+		tempS.insert(v);
+	}
+
+	for(auto v : tempS) {
+		std::cout << v.value << " ";
+	}
+	std::cout << '\n';
+
+	std::set< Edge<int>* > S;
 	
 	//iterate over all the edges inside the graph
 	for(auto edge : *graph.ef) {
 		for(auto vs : tempS) {
 			//if the src of the edge is part of S
-			if(*(edge->src) == *vs) {
-				S.push_back(edge);
+			// and the dest is not part of S (so part of T)
+			if(*(edge->src) == vs && (tempS.find(*(edge->dest)) == tempS.end())) {
+				S.insert(edge);
 			}
 		} 
 	}
-	
-	int min_cut = calc_min_cut(graph, S, T);
 
-	return 0;
+	int min_cut = 0;
+	std::cout << '\n';
+	for(auto e : S) {
+		if(e->src != nullptr && e->dest != nullptr) {
+			std::cout << e->src->value << "-(" << e->weight <<  ")->" << e->dest->value << '\n';
+			min_cut += e->weight;
+		}
+	}
+
+	std::cout << "Min cut= " << min_cut << '\n';
+
+	return min_cut;
 }
 
 } //namespace

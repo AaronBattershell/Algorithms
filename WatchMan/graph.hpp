@@ -81,8 +81,12 @@ struct Edge {
 		return (*dest == *other.dest) && (*src == *other.src) && (weight == other.weight);
   	}
 
-  	bool operator!=(const Vertex<T> &other) const {
+  	bool operator!=(const Edge<T> &other) const {
   		return not(*this == other);
+  	}
+
+  	bool operator<(const Edge<T> &other) const {
+  		return true; //arbitrary ordering
   	}
 };
 

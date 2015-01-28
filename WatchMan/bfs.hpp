@@ -12,34 +12,6 @@
 
 namespace {
 
-template <typename T>
-struct ordered_set {
-	std::set<T> s;
-	std::vector<T> v;
-	// inserts into the vector iff you can insert into the set
-	bool add(T elem) {
-		auto res = s.insert(elem);
-		if(res.second) {
-			v.push_back(elem);
-			return true;
-		}
-		if(!res.second) {
-			return false;
-		}
-	}
-
-	//returns true iff contains the elem
-	bool contains(T elem) {
-		auto search = s.find(elem);
-		if(search != s.end())
-			return true;
-		else
-			return false;
-	}
-
-	std::vector<T> set() { return v; } 
-};
-
 // s = src
 // v = destination
 template <typename T>
