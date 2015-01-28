@@ -13,9 +13,9 @@ int main(int argc, char* argv[]) {
 	
 	if (argc < 2) {
 		std::cout << "Watch, Man! Program Parameters:" << std::endl;
-		std::cout << "\tBFS Test      : -b [FILENAME] [STARTNODE] [ENDNODE]" << std::endl;
-		std::cout << "\tFord-Folkerson: -f [FILENAME]" << std::endl;
-		std::cout << "\tMuseum Problem: -m [FILENAME]" << std::endl;
+		std::cout << "\tBFS Test      : -b [INPUT_FILE_NAME] [START_NODE] [END_NODE]" << std::endl;
+		std::cout << "\tFord-Folkerson: -f [INPUT_FILE_NAME]" << std::endl;
+		std::cout << "\tMuseum Problem: -m [INPUT_FILENAME] [OUTPUT_FILENAME]" << std::endl;
 		
 		return -1;	
 	}
@@ -71,11 +71,18 @@ int main(int argc, char* argv[]) {
 		ford_fulkerson(g, src, sink);
 	}
 	else if(opt == "-m") {
+		if (argc != 4) {
+			std::cout << "Not enough parameters given.\n";
+			std::cout << "Found " << argc << " parameters. Need " << 4 << " parameters.\n";
+			return -1;
+		}
+
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
-		watchman(argv[2]).solve();
+		watchman(argv[2], argv[3]).solve();
 	}
 
 	delete vf;
 
 	return 0;
 }
+

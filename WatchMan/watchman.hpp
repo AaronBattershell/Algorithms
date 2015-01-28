@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <fstream>
 #include "graph.hpp"
 #include "bfs.hpp"
 #include "parsing.hpp"
@@ -15,15 +16,17 @@
 struct watchman {
 	public:	
 		inputData input;
+		std::fstream out;
 
-		watchman(std::string fileName);
+		watchman(std::string inFileName, std::string outFileName);
 		void solve();
 
 	private:
 		void createWalls(std::vector<line> &straitWall, std::vector<arc> &curveWall);
 		void findSightLines(std::vector<line> &straitWall, std::vector<arc> &curveWall, 
-			Graph<int> &g, VertexFactory<int> *v);
+			Graph<int> &g);
 		bool clearLineOfSight(line view, std::vector<line> &straitWall, std::vector<arc> &curveWall);
+		void printReuslt(Graph<int> g, int iter);
 };
 
 #endif
