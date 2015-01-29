@@ -81,8 +81,12 @@ struct Edge {
 		return (*dest == *other.dest) && (*src == *other.src) && (weight == other.weight);
   	}
 
-  	bool operator!=(const Vertex<T> &other) const {
+  	bool operator!=(const Edge<T> &other) const {
   		return not(*this == other);
+  	}
+
+  	bool operator<(const Edge<T> &other) const {
+  		return true; //arbitrary ordering
   	}
 };
 
@@ -109,6 +113,15 @@ struct AdjacencyList : std::list< Edge<T>* > {
 	bool contains(Edge<T>* e) {
 		for(auto edge : *this) {
 			if(*e == *edge) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	bool contains(Vertex<T>* v) {
+		for(auto edge : *this) {
+			if(v->value == edge->dest->value) {
 				return true;
 			}
 		}
