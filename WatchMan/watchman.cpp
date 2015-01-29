@@ -122,16 +122,16 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 				continue;
 			}
 
-			cout << "\tG" << (v.first.value + 1) << ":";
-			out << "\tG" << (v.first.value + 1) << ":";
+			string output("\tG" + to_string(v.first.value + 1) + ":");
+
 			for(auto e : v.second) {
 				if (e->active_capacity()) {					
-					cout << "A" << (e->dest->value + 1 - input.guard_setVector.size()) << ",";
-					out << "A" << (e->dest->value + 1 - input.guard_setVector.size()) << ",";
-				}		
+					output += "A" + to_string(e->dest->value + 1 - input.guard_setVector.size()) + ',';
+				}
 			}
-			cout << "\b \n";
-			out << "\b \n";
+
+			cout << output.substr(0, output.size()-1) + '\n';
+			out << output.substr(0, output.size()-1) + '\n';
 		}
 	}
 }
