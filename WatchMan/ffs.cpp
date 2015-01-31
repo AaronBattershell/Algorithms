@@ -217,7 +217,7 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
 
 	//find the shortest path (in terms of number of edges)
-	while(path.size() > 2) {
+	while(path.size() >= 2) {
 		//path cannot be empty
 		//it must have at least two nodes (src and sink)
 		//get the min capacity going along a path
