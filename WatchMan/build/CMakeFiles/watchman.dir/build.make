@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/flander/Algorithms/WatchMan
+CMAKE_SOURCE_DIR = /home/hvn1/code/Algorithms/WatchMan
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/flander/Algorithms/WatchMan/build
+CMAKE_BINARY_DIR = /home/hvn1/code/Algorithms/WatchMan/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/watchman.dir/depend.make
@@ -48,17 +48,17 @@ include CMakeFiles/watchman.dir/flags.make
 
 CMakeFiles/watchman.dir/main.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/main.cpp.o: ../main.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/main.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/main.cpp.o -c /home/flander/Algorithms/WatchMan/main.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/main.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/main.cpp
 
 CMakeFiles/watchman.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/main.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/main.cpp > CMakeFiles/watchman.dir/main.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/main.cpp > CMakeFiles/watchman.dir/main.cpp.i
 
 CMakeFiles/watchman.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/main.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/main.cpp -o CMakeFiles/watchman.dir/main.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/main.cpp -o CMakeFiles/watchman.dir/main.cpp.s
 
 CMakeFiles/watchman.dir/main.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/main.cpp.o.requires
@@ -71,17 +71,17 @@ CMakeFiles/watchman.dir/main.cpp.o.provides.build: CMakeFiles/watchman.dir/main.
 
 CMakeFiles/watchman.dir/bfs.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/bfs.cpp.o: ../bfs.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/bfs.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/bfs.cpp.o -c /home/flander/Algorithms/WatchMan/bfs.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/bfs.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/bfs.cpp
 
 CMakeFiles/watchman.dir/bfs.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/bfs.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/bfs.cpp > CMakeFiles/watchman.dir/bfs.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/bfs.cpp > CMakeFiles/watchman.dir/bfs.cpp.i
 
 CMakeFiles/watchman.dir/bfs.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/bfs.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/bfs.cpp -o CMakeFiles/watchman.dir/bfs.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/bfs.cpp -o CMakeFiles/watchman.dir/bfs.cpp.s
 
 CMakeFiles/watchman.dir/bfs.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/bfs.cpp.o.requires
@@ -94,17 +94,17 @@ CMakeFiles/watchman.dir/bfs.cpp.o.provides.build: CMakeFiles/watchman.dir/bfs.cp
 
 CMakeFiles/watchman.dir/parsing.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/parsing.cpp.o: ../parsing.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/parsing.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/parsing.cpp.o -c /home/flander/Algorithms/WatchMan/parsing.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/parsing.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/parsing.cpp
 
 CMakeFiles/watchman.dir/parsing.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/parsing.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/parsing.cpp > CMakeFiles/watchman.dir/parsing.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/parsing.cpp > CMakeFiles/watchman.dir/parsing.cpp.i
 
 CMakeFiles/watchman.dir/parsing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/parsing.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/parsing.cpp -o CMakeFiles/watchman.dir/parsing.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/parsing.cpp -o CMakeFiles/watchman.dir/parsing.cpp.s
 
 CMakeFiles/watchman.dir/parsing.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/parsing.cpp.o.requires
@@ -117,17 +117,17 @@ CMakeFiles/watchman.dir/parsing.cpp.o.provides.build: CMakeFiles/watchman.dir/pa
 
 CMakeFiles/watchman.dir/intersection.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/intersection.cpp.o: ../intersection.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/intersection.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/intersection.cpp.o -c /home/flander/Algorithms/WatchMan/intersection.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/intersection.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/intersection.cpp
 
 CMakeFiles/watchman.dir/intersection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/intersection.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/intersection.cpp > CMakeFiles/watchman.dir/intersection.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/intersection.cpp > CMakeFiles/watchman.dir/intersection.cpp.i
 
 CMakeFiles/watchman.dir/intersection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/intersection.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/intersection.cpp -o CMakeFiles/watchman.dir/intersection.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/intersection.cpp -o CMakeFiles/watchman.dir/intersection.cpp.s
 
 CMakeFiles/watchman.dir/intersection.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/intersection.cpp.o.requires
@@ -140,17 +140,17 @@ CMakeFiles/watchman.dir/intersection.cpp.o.provides.build: CMakeFiles/watchman.d
 
 CMakeFiles/watchman.dir/ffs.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/ffs.cpp.o: ../ffs.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/ffs.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/ffs.cpp.o -c /home/flander/Algorithms/WatchMan/ffs.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/ffs.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/ffs.cpp
 
 CMakeFiles/watchman.dir/ffs.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/ffs.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/ffs.cpp > CMakeFiles/watchman.dir/ffs.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/ffs.cpp > CMakeFiles/watchman.dir/ffs.cpp.i
 
 CMakeFiles/watchman.dir/ffs.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/ffs.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/ffs.cpp -o CMakeFiles/watchman.dir/ffs.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/ffs.cpp -o CMakeFiles/watchman.dir/ffs.cpp.s
 
 CMakeFiles/watchman.dir/ffs.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/ffs.cpp.o.requires
@@ -163,17 +163,17 @@ CMakeFiles/watchman.dir/ffs.cpp.o.provides.build: CMakeFiles/watchman.dir/ffs.cp
 
 CMakeFiles/watchman.dir/watchman.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/watchman.cpp.o: ../watchman.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/watchman.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/watchman.cpp.o -c /home/flander/Algorithms/WatchMan/watchman.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/watchman.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/watchman.cpp
 
 CMakeFiles/watchman.dir/watchman.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/watchman.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/watchman.cpp > CMakeFiles/watchman.dir/watchman.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/watchman.cpp > CMakeFiles/watchman.dir/watchman.cpp.i
 
 CMakeFiles/watchman.dir/watchman.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/watchman.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/watchman.cpp -o CMakeFiles/watchman.dir/watchman.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/watchman.cpp -o CMakeFiles/watchman.dir/watchman.cpp.s
 
 CMakeFiles/watchman.dir/watchman.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/watchman.cpp.o.requires
@@ -186,17 +186,17 @@ CMakeFiles/watchman.dir/watchman.cpp.o.provides.build: CMakeFiles/watchman.dir/w
 
 CMakeFiles/watchman.dir/inputData.cpp.o: CMakeFiles/watchman.dir/flags.make
 CMakeFiles/watchman.dir/inputData.cpp.o: ../inputData.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/flander/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/watchman.dir/inputData.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/inputData.cpp.o -c /home/flander/Algorithms/WatchMan/inputData.cpp
+	/usr/bin/g++-4.8   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/watchman.dir/inputData.cpp.o -c /home/hvn1/code/Algorithms/WatchMan/inputData.cpp
 
 CMakeFiles/watchman.dir/inputData.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/watchman.dir/inputData.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/flander/Algorithms/WatchMan/inputData.cpp > CMakeFiles/watchman.dir/inputData.cpp.i
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hvn1/code/Algorithms/WatchMan/inputData.cpp > CMakeFiles/watchman.dir/inputData.cpp.i
 
 CMakeFiles/watchman.dir/inputData.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/watchman.dir/inputData.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/flander/Algorithms/WatchMan/inputData.cpp -o CMakeFiles/watchman.dir/inputData.cpp.s
+	/usr/bin/g++-4.8  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hvn1/code/Algorithms/WatchMan/inputData.cpp -o CMakeFiles/watchman.dir/inputData.cpp.s
 
 CMakeFiles/watchman.dir/inputData.cpp.o.requires:
 .PHONY : CMakeFiles/watchman.dir/inputData.cpp.o.requires
@@ -250,6 +250,6 @@ CMakeFiles/watchman.dir/clean:
 .PHONY : CMakeFiles/watchman.dir/clean
 
 CMakeFiles/watchman.dir/depend:
-	cd /home/flander/Algorithms/WatchMan/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/flander/Algorithms/WatchMan /home/flander/Algorithms/WatchMan /home/flander/Algorithms/WatchMan/build /home/flander/Algorithms/WatchMan/build /home/flander/Algorithms/WatchMan/build/CMakeFiles/watchman.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/hvn1/code/Algorithms/WatchMan/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hvn1/code/Algorithms/WatchMan /home/hvn1/code/Algorithms/WatchMan /home/hvn1/code/Algorithms/WatchMan/build /home/hvn1/code/Algorithms/WatchMan/build /home/hvn1/code/Algorithms/WatchMan/build/CMakeFiles/watchman.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/watchman.dir/depend
 

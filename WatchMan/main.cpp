@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 		Vertex<int>* src = vf->make_vertex(get_src(g).value);
 		std::cout << "Sink nodes: \n";
 		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
-		ford_fulkerson(g, src, sink);
+		ford_fulkerson_detailed(g, src, sink);
 	}
 	else if(opt == "-m") {
 		if (argc != 4) {
