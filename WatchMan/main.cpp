@@ -64,9 +64,9 @@ int main(int argc, char* argv[]) {
 		parse_bfs(argv[2], g);
 		std::cout << "===Graph Adjacency List===\n";
 		g.print();
-		std::cout << "Source nodes: ";
+		std::cout << "Source nodes: \n";
 		Vertex<int>* src = vf->make_vertex(get_src(g).value);
-		std::cout << "Sink nodes: ";
+		std::cout << "Sink nodes: \n";
 		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
 		ford_fulkerson(g, src, sink);
 	}

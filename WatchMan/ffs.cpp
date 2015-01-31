@@ -197,9 +197,20 @@ int get_min_cut(Graph<int> &graph,
 		}
 	}
 
-	std::cout << "Min cut= " << min_cut << '\n';
-
 	return min_cut;
+}
+
+int get_max_flow(Graph<int> &g, Vertex<int>* sink) {
+	//iterate over all the edges
+	//find all edges where the destination is the sink
+	//sum up all the active flows
+	int max_flow = 0;
+	for(auto e : *(g.ef)) {
+		if(*(e->dest) == *sink) {
+			max_flow += e->active_capacity();
+		}
+	}
+	return max_flow;
 }
 
 } //namespace
@@ -250,6 +261,10 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 
 	//get the min cut from the residual graph
 	int min_cut = get_min_cut(g, rGraph, src, sink);
+	std::cout << "Min cut= " << min_cut << '\n';
+	//get the max flow from the residual graph
+	int max_flow = get_max_flow(g, sink);
+	std::cout << "Max flow= " << max_flow << '\n';
 
 	return g;
 }
@@ -288,7 +303,8 @@ Vertex<int> get_src(Graph<int> &g) {
 		// Assigne all source nodes a super source
 		Vertex<int> *super_source = g.vf->make_vertex(-1);
 		for (auto i : V) {
-			g.add_edge(super_source, &i, 10000001);	
+			Vertex<int>* temp_v = g.get_vertex(i.value);
+			g.add_edge(super_source, temp_v, 10000001);	
 		}
 
 		return *super_source;
@@ -321,7 +337,8 @@ Vertex<int> get_sink(Graph<int> &g) {
 		// Assigne all sinks a super sink
 		Vertex<int> *super_sink = g.vf->make_vertex(-2);
 		for (auto i : sinks) {
-			g.add_edge(&i, super_sink, 10000001);	
+			Vertex<int>* temp_v = g.get_vertex(i.value);
+			g.add_edge(temp_v, super_sink, 10000001);	
 		}
 
 		return *super_sink;
