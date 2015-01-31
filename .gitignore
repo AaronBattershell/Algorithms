@@ -26,3 +26,8 @@
 *.exe
 *.out
 *.app
+
+#Temp files
+*.cpp~
+*.hpp~
+*.h~

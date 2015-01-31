@@ -10,6 +10,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+	
 	if (argc < 2) {
 		std::cout << "Watch, Man! Program Parameters:" << std::endl;
 		std::cout << "\tBFS Test      : -b [INPUT_FILE_NAME] [START_NODE] [END_NODE]" << std::endl;
@@ -63,9 +64,9 @@ int main(int argc, char* argv[]) {
 		parse_bfs(argv[2], g);
 		std::cout << "===Graph Adjacency List===\n";
 		g.print();
-		std::cout << "Source nodes: \n";
+		std::cout << "Source nodes: ";
 		Vertex<int>* src = vf->make_vertex(get_src(g).value);
-		std::cout << "Sink nodes: \n";
+		std::cout << "Sink nodes: ";
 		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
 		ford_fulkerson(g, src, sink);
 	}
