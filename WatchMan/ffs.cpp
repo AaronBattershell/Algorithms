@@ -197,17 +197,31 @@ int get_min_cut(Graph<int> &graph,
 		}
 	}
 
-	std::cout << "Min cut= " << min_cut << '\n';
-
 	return min_cut;
 }
+
+
 
 } //namespace
 
 
+int get_max_flow(Graph<int> &g, Vertex<int>* sink) {
+	//iterate over all the edges
+	//find all edges where the destination is the sink
+	//sum up all the active flows
+	int max_flow = 0;
+	for(auto e : *(g.ef)) {
+		if(*(e->dest) == *sink) {
+			max_flow += e->active_capacity();
+		}
+	}
+	return max_flow;
+}
+
 //takes a network, src, and sink and performs ford fulkerson on the graph
 // returns an int which is the max flow of the network
-Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
+//this version prints out a bunch of details about the algorithm as it works
+Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	
 	//construct a residual graph thats initially the same as the original
 	Graph<int> rGraph = rGraph.deep_copy(g);
@@ -217,7 +231,7 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
 
 	//find the shortest path (in terms of number of edges)
-	while(path.size() > 2) {
+	while(path.size() >= 2) {
 		//path cannot be empty
 		//it must have at least two nodes (src and sink)
 		//get the min capacity going along a path
@@ -250,6 +264,64 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 
 	//get the min cut from the residual graph
 	int min_cut = get_min_cut(g, rGraph, src, sink);
+	std::cout << "Min cut= " << min_cut << '\n';
+	//get the max flow from the residual graph
+	int max_flow = get_max_flow(g, sink);
+	std::cout << "Max flow= " << max_flow << '\n';
+
+	return g;
+}
+
+
+//takes a network, src, and sink and performs ford fulkerson on the graph
+// returns an int which is the max flow of the network
+Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
+	
+	//construct a residual graph thats initially the same as the original
+	Graph<int> rGraph = rGraph.deep_copy(g);
+	Vertex<int>* rSrc = rGraph.vf->make_vertex(get_src(rGraph).value);
+	Vertex<int>* rSink = rGraph.vf->make_vertex(get_sink(rGraph).value);
+
+	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
+
+	//find the shortest path (in terms of number of edges)
+	while(path.size() >= 2) {
+		//path cannot be empty
+		//it must have at least two nodes (src and sink)
+		//get the min capacity going along a path
+		int min_cap = min_capacity(path);
+	
+		//min capacity cannot be zero at this point otherwise there is no path
+		if(min_cap == 0)
+			return g;
+		
+		//adjust the flow going along each edge based on the min_cap
+		for(auto vertex : path) {
+			if(vertex->pred)
+				vertex->pred->active_flow = min_cap;
+		}
+
+		//augment the original graph
+		//std::cout << "===Augmented Path===\n";
+		augment_path(g, path);
+		//g.print();
+		
+		//create a residual graph
+		//std::cout << "===Residual Network===\n";
+		rGraph = construct_residual_graph(g);
+		//rGraph.print();
+		
+		path = bfs(rGraph, 
+				   rGraph.vf->make_vertex(src->value),
+				   rGraph.vf->make_vertex(sink->value));
+	}
+
+	//get the min cut from the residual graph
+	//int min_cut = get_min_cut(g, rGraph, src, sink);
+	//std::cout << "Min cut= " << min_cut << '\n';
+	//get the max flow from the residual graph
+	//int max_flow = get_max_flow(g, sink);
+	//std::cout << "Max flow= " << max_flow << '\n';
 
 	return g;
 }
@@ -288,7 +360,8 @@ Vertex<int> get_src(Graph<int> &g) {
 		// Assigne all source nodes a super source
 		Vertex<int> *super_source = g.vf->make_vertex(-1);
 		for (auto i : V) {
-			g.add_edge(super_source, &i, 10000001);	
+			Vertex<int>* temp_v = g.get_vertex(i.value);
+			g.add_edge(super_source, temp_v, 10000001);	
 		}
 
 		return *super_source;
@@ -321,7 +394,8 @@ Vertex<int> get_sink(Graph<int> &g) {
 		// Assigne all sinks a super sink
 		Vertex<int> *super_sink = g.vf->make_vertex(-2);
 		for (auto i : sinks) {
-			g.add_edge(&i, super_sink, 10000001);	
+			Vertex<int>* temp_v = g.get_vertex(i.value);
+			g.add_edge(temp_v, super_sink, 10000001);	
 		}
 
 		return *super_sink;
