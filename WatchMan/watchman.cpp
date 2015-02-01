@@ -22,7 +22,7 @@ void watchman::solve() {
 		cout << " gaurds, nodes " << input.guard_setVector.size() << " - ";
 		cout << input.guard_setVector.size() + input.paint_setVector.size() - 1 << " paintings" << endl;
 		
-		printReuslt(ford_fulkerson(g, src, sink), iter);
+		printReuslt(ford_fulkerson_detailed(g, src, sink), iter);
 
 		delete g.vf;
 	}	
@@ -98,17 +98,9 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 		neededArt += input.paint_setVector[i][2];
 	}
 
-	// Find the number of paintings being watched by gaurds
-	int i = -2;
-	for(auto v : g) {
-		++i;
-		
-		if (i > input.guard_setVector.size()) {
-			for(auto e : v.second) {				
-				watchedArt += e->active_capacity();
-			}	
-		}
-	}
+	Vertex<int>* sink = g.vf->make_vertex(get_sink(g).value);
+
+	watchedArt = get_max_flow(g, sink);
 	
 	cout << "Case " << iter << ": " << (neededArt == watchedArt ? "Yes" : "No") << endl;
 	out << "Case " << iter << ": " << (neededArt == watchedArt ? "Yes" : "No") << endl;

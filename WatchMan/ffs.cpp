@@ -200,6 +200,11 @@ int get_min_cut(Graph<int> &graph,
 	return min_cut;
 }
 
+
+
+} //namespace
+
+
 int get_max_flow(Graph<int> &g, Vertex<int>* sink) {
 	//iterate over all the edges
 	//find all edges where the destination is the sink
@@ -211,62 +216,6 @@ int get_max_flow(Graph<int> &g, Vertex<int>* sink) {
 		}
 	}
 	return max_flow;
-}
-
-} //namespace
-
-
-//takes a network, src, and sink and performs ford fulkerson on the graph
-// returns an int which is the max flow of the network
-Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
-	
-	//construct a residual graph thats initially the same as the original
-	Graph<int> rGraph = rGraph.deep_copy(g);
-	Vertex<int>* rSrc = rGraph.vf->make_vertex(get_src(rGraph).value);
-	Vertex<int>* rSink = rGraph.vf->make_vertex(get_sink(rGraph).value);
-
-	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
-
-	//find the shortest path (in terms of number of edges)
-	while(path.size() >= 2) {
-		//path cannot be empty
-		//it must have at least two nodes (src and sink)
-		//get the min capacity going along a path
-		int min_cap = min_capacity(path);
-	
-		//min capacity cannot be zero at this point otherwise there is no path
-		if(min_cap == 0)
-			return g;
-		
-		//adjust the flow going along each edge based on the min_cap
-		for(auto vertex : path) {
-			if(vertex->pred)
-				vertex->pred->active_flow = min_cap;
-		}
-
-		//augment the original graph
-		//std::cout << "===Augmented Path===\n";
-		augment_path(g, path);
-		//g.print();
-		
-		//create a residual graph
-		//std::cout << "===Residual Network===\n";
-		rGraph = construct_residual_graph(g);
-		//rGraph.print();
-		
-		path = bfs(rGraph, 
-				   rGraph.vf->make_vertex(src->value),
-				   rGraph.vf->make_vertex(sink->value));
-	}
-
-	//get the min cut from the residual graph
-	//int min_cut = get_min_cut(g, rGraph, src, sink);
-	//std::cout << "Min cut= " << min_cut << '\n';
-	//get the max flow from the residual graph
-	//int max_flow = get_max_flow(g, sink);
-	//std::cout << "Max flow= " << max_flow << '\n';
-
-	return g;
 }
 
 //takes a network, src, and sink and performs ford fulkerson on the graph
@@ -319,6 +268,60 @@ Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* 
 	//get the max flow from the residual graph
 	int max_flow = get_max_flow(g, sink);
 	std::cout << "Max flow= " << max_flow << '\n';
+
+	return g;
+}
+
+
+//takes a network, src, and sink and performs ford fulkerson on the graph
+// returns an int which is the max flow of the network
+Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
+	
+	//construct a residual graph thats initially the same as the original
+	Graph<int> rGraph = rGraph.deep_copy(g);
+	Vertex<int>* rSrc = rGraph.vf->make_vertex(get_src(rGraph).value);
+	Vertex<int>* rSink = rGraph.vf->make_vertex(get_sink(rGraph).value);
+
+	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
+
+	//find the shortest path (in terms of number of edges)
+	while(path.size() >= 2) {
+		//path cannot be empty
+		//it must have at least two nodes (src and sink)
+		//get the min capacity going along a path
+		int min_cap = min_capacity(path);
+	
+		//min capacity cannot be zero at this point otherwise there is no path
+		if(min_cap == 0)
+			return g;
+		
+		//adjust the flow going along each edge based on the min_cap
+		for(auto vertex : path) {
+			if(vertex->pred)
+				vertex->pred->active_flow = min_cap;
+		}
+
+		//augment the original graph
+		//std::cout << "===Augmented Path===\n";
+		augment_path(g, path);
+		//g.print();
+		
+		//create a residual graph
+		//std::cout << "===Residual Network===\n";
+		rGraph = construct_residual_graph(g);
+		//rGraph.print();
+		
+		path = bfs(rGraph, 
+				   rGraph.vf->make_vertex(src->value),
+				   rGraph.vf->make_vertex(sink->value));
+	}
+
+	//get the min cut from the residual graph
+	//int min_cut = get_min_cut(g, rGraph, src, sink);
+	//std::cout << "Min cut= " << min_cut << '\n';
+	//get the max flow from the residual graph
+	//int max_flow = get_max_flow(g, sink);
+	//std::cout << "Max flow= " << max_flow << '\n';
 
 	return g;
 }

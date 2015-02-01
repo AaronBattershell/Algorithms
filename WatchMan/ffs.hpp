@@ -15,3 +15,5 @@ Vertex<int> get_sink(Graph<int> &g);
 // returns the vertices in the min cut given a residual graph
 std::vector< Vertex<int>* > min_cut(Graph<int> &rGraph);
 
+int get_max_flow(Graph<int> &g, Vertex<int>* sink);
+
