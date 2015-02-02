@@ -68,8 +68,8 @@ bool arc::intersect(line l) {
 	 *       D > 0 : Two intersection points
 	*/
 	if (D < 0) {
-		cout << "No int: " << D << endl;
-		//return false;
+		//cout << "No int: " << D << endl;
+		return false;
 	}
 	
 	line arcPointsLine(point(one.x, one.y), point(two.x, two.y));

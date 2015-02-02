@@ -17,10 +17,10 @@ void watchman::solve() {
 		Vertex<int> *src = g.vf->make_vertex(get_src(g).value);
 		Vertex<int> *sink = g.vf->make_vertex(get_sink(g).value);
 
-		cout << "===Starting Graph===\n";
-		cout << "(-1 super sorce, -2 super sink, node 0 - " << input.guard_setVector.size() - 1;
-		cout << " gaurds, nodes " << input.guard_setVector.size() << " - ";
-		cout << input.guard_setVector.size() + input.paint_setVector.size() - 1 << " paintings" << endl;
+		//cout << "===Starting Graph===\n";
+		//cout << "(-1 super sorce, -2 super sink, node 0 - " << input.guard_setVector.size() - 1;
+		//cout << " gaurds, nodes " << input.guard_setVector.size() << " - ";
+		//cout << input.guard_setVector.size() + input.paint_setVector.size() - 1 << " paintings" << endl;
 		
 		printReuslt(ford_fulkerson_detailed(g, src, sink), iter);
 
@@ -122,8 +122,8 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 				}
 			}
 
-			cout << output.substr(0, output.size()-1) + '\n';
-			out << output.substr(0, output.size()-1) + '\n';
+			//cout << output.substr(0, output.size()-1) + '\n';
+			//out << output.substr(0, output.size()-1) + '\n';
 		}
 	}
 }
