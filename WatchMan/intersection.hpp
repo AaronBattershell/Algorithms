@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#define OFFSET 0.000000001
+
 struct arc;
 
 struct point {
@@ -20,6 +22,7 @@ struct line {
 	bool liesOnSegment(point p);
 	bool intersect(line l);
 	bool intersect(arc c);
+	bool parallel(line l);
 };
 	
 struct arc {
