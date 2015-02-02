@@ -6,10 +6,13 @@
 #include <string>
 #include <unordered_set>
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+ 
 	if (argc < 2) {
 		std::cout << "Watch, Man! Program Parameters:" << std::endl;
 		std::cout << "\tBFS Test      : -b [INPUT_FILE_NAME] [START_NODE] [END_NODE]" << std::endl;
@@ -54,8 +57,18 @@ int main(int argc, char* argv[]) {
 		g.print();
 		std::cout << "===PATH===\n";
 		std::cout << "==BFS==\n";
+
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+    	start = std::chrono::system_clock::now();
+
 		auto path = bfs(g, src, dest);
 		print_path(path);
+
+		std::chrono::duration<double> elapsed_seconds = end-start;
+    	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+    	std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
 	}
 	else if(opt == "-f") {
 		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
@@ -67,7 +80,22 @@ int main(int argc, char* argv[]) {
 		Vertex<int>* src = vf->make_vertex(get_src(g).value);
 		std::cout << "Sink nodes: \n";
 		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
-		ford_fulkerson_detailed(g, src, sink);
+
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+    	start = std::chrono::system_clock::now();
+
+		g = ford_fulkerson(g, src, sink);
+
+		end = std::chrono::system_clock::now();
+
+		int max_flow = get_max_flow(g, sink);
+	    std::cout << "Max flow= " << max_flow << '\n';
+
+		std::chrono::duration<double> elapsed_seconds = end-start;
+    	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+    	std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
 	}
 	else if(opt == "-m") {
 		if (argc != 4) {
@@ -77,7 +105,17 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
+
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+    	start = std::chrono::system_clock::now();
+
 		watchman(argv[2], argv[3]).solve();
+
+		std::chrono::duration<double> elapsed_seconds = end-start;
+    	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+    	std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
 	}
 
 	delete vf;
