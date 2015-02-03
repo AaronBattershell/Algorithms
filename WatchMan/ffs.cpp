@@ -282,6 +282,11 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 	Vertex<int>* rSrc = rGraph.vf->make_vertex(get_src(rGraph).value);
 	Vertex<int>* rSink = rGraph.vf->make_vertex(get_sink(rGraph).value);
 
+	//====timing stuff======
+	// std::chrono::time_point<std::chrono::system_clock> start, end;
+ //    start = std::chrono::system_clock::now();
+    //=========
+
 	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
 
 	//find the shortest path (in terms of number of edges)
@@ -315,6 +320,14 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 				   rGraph.vf->make_vertex(src->value),
 				   rGraph.vf->make_vertex(sink->value));
 	}
+
+	//timing stuff
+	// end = std::chrono::system_clock::now();
+	// std::chrono::duration<double> elapsed_seconds = end-start;
+ //    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+ //    std::cout << "finished computation at " << std::ctime(&end_time)
+ //              << "elapsed time: " << elapsed_seconds.count() << "s\n";
 
 	//get the min cut from the residual graph
 	//int min_cut = get_min_cut(g, rGraph, src, sink);

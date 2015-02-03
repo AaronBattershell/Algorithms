@@ -1,5 +1,7 @@
 #include "graph.hpp"
 #include "bfs.hpp"
+#include <chrono>
+#include <ctime>
 
 //performs ford-fulkerson on one src and one sink
 Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink);
