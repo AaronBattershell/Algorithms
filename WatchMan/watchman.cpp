@@ -22,7 +22,7 @@ void watchman::solve() {
 		//cout << " gaurds, nodes " << input.guard_setVector.size() << " - ";
 		//cout << input.guard_setVector.size() + input.paint_setVector.size() - 1 << " paintings" << endl;
 		
-		printReuslt(ford_fulkerson_detailed(g, src, sink), iter);
+		printReuslt(ford_fulkerson(g, src, sink), iter);
 
 		delete g.vf;
 	}	
@@ -122,8 +122,8 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 				}
 			}
 
-			//cout << output.substr(0, output.size()-1) + '\n';
-			//out << output.substr(0, output.size()-1) + '\n';
+			cout << output.substr(0, output.size()-1) + '\n';
+			out << output.substr(0, output.size()-1) + '\n';
 		}
 	}
 }
