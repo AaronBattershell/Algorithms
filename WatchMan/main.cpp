@@ -62,7 +62,10 @@ int main(int argc, char* argv[]) {
     	start = std::chrono::system_clock::now();
 
 		auto path = bfs(g, src, dest);
+
+
 		print_path(path);
+		end = std::chrono::system_clock::now();
 
 		std::chrono::duration<double> elapsed_seconds = end-start;
     	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
@@ -91,8 +94,9 @@ int main(int argc, char* argv[]) {
 		int max_flow = get_max_flow(g, sink);
 	    std::cout << "Max flow= " << max_flow << '\n';
 
+	    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
 		std::chrono::duration<double> elapsed_seconds = end-start;
-    	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
  
     	std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
@@ -111,8 +115,12 @@ int main(int argc, char* argv[]) {
 
 		watchman(argv[2], argv[3]).solve();
 
+		end = std::chrono::system_clock::now();
+
+		std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
 		std::chrono::duration<double> elapsed_seconds = end-start;
-    	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+    	
  
     	std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
