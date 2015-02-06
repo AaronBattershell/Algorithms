@@ -7,80 +7,38 @@ point::point(double x, double y)
 	: x(x), y(y)
 { }
 
-point::point(const point &p)
-	: x(p.x), y(p.y)
-{ }
-
 double point::dist(point p) {
 	return sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
 }
 
 line::line(point one, point two)
-	: one(one.x, one.y), two(two.x, two.y), A(this->one.y - this->two.y), B(this->two.x - this->one.x), C(this->one.x * this->two.y - this->two.x * this->one.y)
+	: one(one.x + OFFSET, one.y + OFFSET), two(two.x - OFFSET, two.y - OFFSET), slope((this->one.y - this->two.y) / (this->one.x - this->two.x)), yInt(this->one.y - slope * this->one.x)
 { }
-
-point line::getIntersect(line l) {
-	// Check for special cases like vertical and or horizontal lines
-	if (parallel(l)) { // parallel
-		return point(ndef, ndef);
-	}
-	else if (!A && !l.B) { // this horizontal, l vertical
-		return point(-l.C / l.A, -C / B);
-	}
-	else if (!B && !l.A) { // this vertical, l horizontal
-		return l.getIntersect(*this);
-	}
-	else if (!A) { // this horizontal
-		return point((-l.B * -C / B - l.C) / l.A, -C / B);
-	}
-	else if (!l.A) { // l horizontal
-		return l.getIntersect(*this);
-	}
-	else if (!B) { // this vertical
-		return point(-C / A, (-l.A * -C / A - l.C) / l.B);
-	}
-	else if (!l.B) { // l vertical
-		return l.getIntersect(*this);
-	}
-	else { // neither this nor l vertical or horizontal
-		// Solve for Ax1 + By1 - C1 = Ax2 + By2 - C2 
-		double yInt = (-C * l.A - C - l.C) / (B * l.B + l.A * B);
-		double xInt = (-B * yInt - C) / A;
-
-		return point(xInt, yInt);
-	}
-}
-
-bool line::parallel(line l) {
-	return (abs((one.y - two.y) / (one.x - two.x) - (l.one.y - l.two.y) / (l.one.x - l.two.x)) < TOLLERANCE) ||
-		(abs(one.x - two.x) < TOLLERANCE && abs(l.one.x - l.two.x) < TOLLERANCE) ||
-		((abs(one.y - two.y) < TOLLERANCE && abs(l.one.y - l.two.y) < TOLLERANCE));
-}
-
-bool line::perpendicular(line l) {
-	return (abs((one.y - two.y) / (one.x - two.x) + (l.one.y - l.two.y) / (l.one.x - l.two.x)) < TOLLERANCE) ||
-		(abs(one.x - two.x) < TOLLERANCE && abs(l.one.y - l.two.y) < TOLLERANCE) ||
-		((abs(one.y - two.y) < TOLLERANCE && abs(l.one.x - l.two.x) < TOLLERANCE));
-}
 
 bool line::liesOnSegment(point p) {
 	return one.dist(p) + two.dist(p) - one.dist(two) < TOLLERANCE;
 }
 
+bool line::parallel(line l) {
+	//cout << "Comparing: " << "(" << one.x << ", " << one.y << "), (" << two.x << ", " << two.y << ")" << endl;
+	//cout << "Comparing: " << "(" << l.one.x << ", " << l.one.y << "), (" << l.two.x << ", " << l.two.y << ")" << endl;
+
+	return (abs((one.y - two.y) / (one.x - two.x) - (l.one.y - l.two.y) / (l.one.x - l.two.x)) < TOLLERANCE) || 
+		(abs(one.x - two.x) < TOLLERANCE && abs(l.one.x - l.two.x) < TOLLERANCE) ||
+		((abs(one.y - two.y) < TOLLERANCE && abs(l.one.y - l.two.y) < TOLLERANCE));
+}
+
 // Returns true if two line segments intersect
 bool line::intersect(line l) {
-	point lineInt(getIntersect(l));
+	double xInt = (yInt - l.yInt) / (l.slope - slope);
+	point lineInt(xInt, l.slope * xInt + l.yInt);
 
-	return lineInt.x != ndef && l.liesOnSegment(lineInt) && liesOnSegment(lineInt);
+	return l.liesOnSegment(lineInt) && liesOnSegment(lineInt);
 }
 
 bool line::intersect(arc c) {
 	return c.intersect(*this);
 }
-
-//void print(line l) {
-//	cout << "(" << l.one.x << ", " << l.one.y << "), (" << l.two.x << ", " << l.two.y << ")" << endl;
-//}
 
 arc::arc(point one, point two, double dx, double dy)
 	: one(one), two(two), dx(dx), dy(dy) {
@@ -90,101 +48,69 @@ arc::arc(point one, point two, double dx, double dy)
 	line lineToCenter2(point(centerOfGivenPoints.x, centerOfGivenPoints.y),
 		point(centerOfGivenPoints.x + (one.x - two.x), centerOfGivenPoints.y - (one.y - two.y)));
 
-	if (/*!lineToCenter1.parallel(lineToCenter2) &&*/ !lineToCenter2.perpendicular(line(one, two))) {
-		center = lineToCenter1.getIntersect(lineToCenter2);
+	if (!lineToCenter1.parallel(lineToCenter2)) {
+		double xInt = (lineToCenter1.yInt - lineToCenter2.yInt) / (lineToCenter2.slope - lineToCenter1.slope);
+		center.x = xInt;
+		center.y = lineToCenter2.slope * xInt + lineToCenter2.yInt;
 	}
 	else {
-		//cout << "Parallel or perp" << endl;
 		center = centerOfGivenPoints;
+		//cout << center.x << ' ' << center.y << endl;
 	}
 
 	//cout << "Center: " << center.x << ' ' << center.y << endl;
+
 	radius = center.dist(one);
 }
 
-
 // Returns true if a line segment and arc intersect
 bool arc::intersect(line l) {
-	// Center the line and arc
-	line centerLine(point(l.one.x - center.x, l.one.y - center.y), point(l.two.x - center.x, l.two.y - center.y));
-	arc centerArc(point(one.x - center.x, one.y - center.y), point(two.x - center.x, two.y - center.y), dx, dy);
+	double A = pow(l.slope, 2) + 1;
+	double B = 2 * (l.slope * l.yInt - l.slope * center.y - center.x);
+	double C = pow(center.y, 2) - pow(radius, 2) + pow(center.x, 2) - 2 * l.yInt * center.y + pow(l.yInt, 2);
+	double D = pow(B, 2) - 4 * A * C;
 
-	/*cout << "Radius: " << endl;
-	cout << radius << endl;
-	cout << centerArc.radius << endl << endl;
-
-	cout << "Center: " << endl;
-	cout << center.x << ' ' << center.y << endl;
-	cout << centerArc.center.x << ' ' << centerArc.center.y << endl << endl;
-
-	cout << "Arc Cords" << endl;
-	cout << one.x << ' ' << one.y << ' ' << two.x << ' ' << two.y << endl;
-	cout << centerArc.one.x << ' ' << centerArc.one.y << ' ' << centerArc.two.x << ' ' << centerArc.two.y << endl << endl;
-
-	cout << "Line Cords" << endl;
-	cout << l.one.x << ' ' << l.one.y << ' ' << l.two.x << ' ' << l.two.y << endl;
-	cout << centerLine.one.x << ' ' << centerLine.one.y << ' ' << centerLine.two.x << ' ' << centerLine.two.y << endl << endl;
+	/* Note: D < 0 : Zero intersection points
+	*       D == 0: One intersection point
+	*       D > 0 : Two intersection points
 	*/
-
-	double DX = centerLine.two.x - centerLine.one.x;
-	double DY = centerLine.two.y - centerLine.one.y;
-	double DR = sqrt(pow(DX, 2) + pow(DY, 2));
-	double D = centerLine.one.x * centerLine.two.y - centerLine.two.x * centerLine.one.y;
-
-	double intersections = pow(centerArc.radius, 2) * pow(DR, 2) - pow(D, 2);
-
-	// Note: intersections < 0 : Zero intersection points
-	//       intersections == 0: One intersection point
-	//       intersections > 0 : Two intersection points
-	if (intersections < 0) {
+	if (D < 0) {
 		return false;
 	}
 
-	//line arcPointsLine(centerLine.one, centerLine.two);
-	line arcPointsLine(centerArc.one, centerArc.two);
+	line arcPointsLine(point(one.x, one.y), point(two.x, two.y));
 
-	if (intersections >= 0) {
-		double xInt = (D * DY + (DY < 0 ? -1 : 1) * DX * sqrt(pow(centerArc.radius, 2) * pow(DR, 2) - pow(D, 2))) / pow(DR, 2);
-		double yInt = (-centerLine.A * xInt - centerLine.C) / centerLine.B;
+	if (D >= 0) {
+		double xInt = (-B + sqrt(D)) / 2 * A;
+		double yInt = l.slope * xInt + l.yInt;
 
-		point intersectionPoint(xInt, yInt);
+		line dxdyIntLine(point(xInt, yInt), point(one.x + dx, one.y + dy));
 
-		line dxdyIntLine(intersectionPoint, point(centerArc.one.x + dx, centerArc.one.y + dy));
-		point crossingPoint = arcPointsLine.getIntersect(dxdyIntLine);
+		double crossXInt = (arcPointsLine.yInt - dxdyIntLine.yInt) / (dxdyIntLine.slope - arcPointsLine.slope);
+		point lineInt(crossXInt, dxdyIntLine.slope * crossXInt + dxdyIntLine.yInt);
 
-		/*cout << "Arc points line: "; print(arcPointsLine);
-		cout << "DxDyInt line: "; print(dxdyIntLine);
+		//cout << "Intersection: " << xInt << ' ' << yInt << endl;
 
-		cout << "Intersecting arcPoints line with dx dy int line: " << crossingPoint.x << ' ' << crossingPoint.y << endl;
-		cout << "intersection point: " << xInt << ' ' << yInt << endl;
-		cout << (crossingPoint.x != ndef) << ' ' << (!dxdyIntLine.liesOnSegment(crossingPoint)) << ' ' << (centerLine.liesOnSegment(intersectionPoint)) << endl << endl;
-		*/
-		if (arcPointsLine.parallel(dxdyIntLine) || (crossingPoint.x != ndef && !dxdyIntLine.liesOnSegment(crossingPoint) && centerLine.liesOnSegment(intersectionPoint))) {
+		if (!dxdyIntLine.liesOnSegment(lineInt) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}
-	if (intersections > 0) {
-		double xInt = (D * DY - (DY < 0 ? -1 : 1) * DX * sqrt(pow(centerArc.radius, 2) * pow(DR, 2) - pow(D, 2))) / pow(DR, 2);
-		double yInt = (-centerLine.A * xInt - centerLine.C) / centerLine.B;
+	if (D > 0) {
+		double xInt = (-B - sqrt(D)) / 2 * A;
+		double yInt = l.slope * xInt + l.yInt;
 
-		point intersectionPoint(xInt, yInt);
+		line dxdyIntLine(point(xInt, yInt), point(one.x + dx, one.y + dy));
 
-		line dxdyIntLine(intersectionPoint, point(centerArc.one.x + dx, centerArc.one.y + dy));
-		point crossingPoint = arcPointsLine.getIntersect(dxdyIntLine);
+		double crossXInt = (arcPointsLine.yInt - dxdyIntLine.yInt) / (dxdyIntLine.slope - arcPointsLine.slope);
+		point lineInt(crossXInt, dxdyIntLine.slope * crossXInt + dxdyIntLine.yInt);
 
-		/*cout << "Arc points line: "; print(arcPointsLine);
-		cout << "DxDyInt line: "; print(dxdyIntLine);
+		//cout << "Intersection: " << xInt << ' ' << yInt << endl;
 
-		cout << "Intersecting arcPoints line with dx dy int line: " << crossingPoint.x << ' ' << crossingPoint.y << endl;
-		cout << "intersection point: " << xInt << ' ' << yInt << endl;
-		cout << (crossingPoint.x != ndef) << ' ' << (!dxdyIntLine.liesOnSegment(crossingPoint)) << ' ' << (centerLine.liesOnSegment(intersectionPoint)) << endl << endl;*/
-
-		if (arcPointsLine.parallel(dxdyIntLine) || (crossingPoint.x != ndef && !dxdyIntLine.liesOnSegment(crossingPoint) && centerLine.liesOnSegment(intersectionPoint))) {
+		if (!dxdyIntLine.liesOnSegment(lineInt) && l.liesOnSegment(point(xInt, yInt))) {
 			return true;
 		}
 	}
 
 	return false;
 }
-
 
