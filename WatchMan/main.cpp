@@ -101,6 +101,34 @@ int main(int argc, char* argv[]) {
     	std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
 	}
+	else if(opt == "-df") {
+		std::cout << "You have chosen Ford-Fulkerson with file " << argv[2] << '\n';
+		std::cout << "===File Contents===\n";
+		parse_bfs(argv[2], g);
+		std::cout << "===Graph Adjacency List===\n";
+		g.print();
+		std::cout << "Source nodes: \n";
+		Vertex<int>* src = vf->make_vertex(get_src(g).value);
+		std::cout << "Sink nodes: \n";
+		Vertex<int>* sink = vf->make_vertex(get_sink(g).value);
+
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+    	start = std::chrono::system_clock::now();
+
+		g = ford_fulkerson_detailed(g, src, sink);
+
+		end = std::chrono::system_clock::now();
+
+		int max_flow = get_max_flow(g, sink);
+	    std::cout << "Max flow= " << max_flow << '\n';
+
+	    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+		std::chrono::duration<double> elapsed_seconds = end-start;
+ 
+    	std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+	}
 	else if(opt == "-m") {
 		if (argc != 4) {
 			std::cout << "Not enough parameters given.\n";

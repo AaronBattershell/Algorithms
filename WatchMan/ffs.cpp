@@ -248,14 +248,14 @@ Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* 
 		}
 
 		//augment the original graph
-		//std::cout << "===Augmented Path===\n";
+		std::cout << "===Augmented Path===\n";
 		augment_path(g, path);
-		//g.print();
+		g.print();
 		
 		//create a residual graph
-		//std::cout << "===Residual Network===\n";
+		std::cout << "===Residual Network===\n";
 		rGraph = construct_residual_graph(g);
-		//rGraph.print();
+		rGraph.print();
 		
 		path = bfs(rGraph, 
 				   rGraph.vf->make_vertex(src->value),
@@ -264,10 +264,10 @@ Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* 
 
 	//get the min cut from the residual graph
 	int min_cut = get_min_cut(g, rGraph, src, sink);
-	//std::cout << "Min cut= " << min_cut << '\n';
+	std::cout << "Min cut= " << min_cut << '\n';
 	//get the max flow from the residual graph
 	int max_flow = get_max_flow(g, sink);
-	//std::cout << "Max flow= " << max_flow << '\n';
+	std::cout << "Max flow= " << max_flow << '\n';
 
 	return g;
 }
