@@ -48,7 +48,7 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 
 	if(*src == *dest) {
 		//if we cant find a path return an empty vector
-		std::cout << "BFS : WARNING : No path found\n";
+		//std::cout << "BFS : WARNING : No path found\n";
 		std::vector<V*> empty;
 		return empty;
 	}
@@ -56,7 +56,7 @@ std::vector< Vertex<T>* > store_path(Graph<T> &graph, Vertex<T>* src, Vertex<T>*
 	while(*current != *src) {
 		if(current->pred == nullptr) {
 			//if we cant find a path return an empty vector
-			std::cout << "BFS : WARNING : No path found\n";
+			//std::cout << "BFS : WARNING : No path found\n";
 			std::vector<V*> empty;
 			return empty;
 		}

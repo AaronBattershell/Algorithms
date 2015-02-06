@@ -161,8 +161,8 @@ int get_min_cut(Graph<int> &graph,
 		}
 	}
 
-	std::cout << "===Min Cut===\n";
-	std::cout << "Vertices in S: ";
+	//std::cout << "===Min Cut===\n";
+	//std::cout << "Vertices in S: ";
 
 	std::set< Vertex<int> > tempS;
 
@@ -170,10 +170,10 @@ int get_min_cut(Graph<int> &graph,
 		tempS.insert(v);
 	}
 
-	for(auto v : tempS) {
-		std::cout << v.value << " ";
-	}
-	std::cout << '\n';
+	//for(auto v : tempS) {
+		//std::cout << v.value << " ";
+	//}
+	//std::cout << '\n';
 
 	std::set< Edge<int>* > S;
 	
@@ -189,10 +189,10 @@ int get_min_cut(Graph<int> &graph,
 	}
 
 	int min_cut = 0;
-	std::cout << '\n';
+	//std::cout << '\n';
 	for(auto e : S) {
 		if(e->src != nullptr && e->dest != nullptr) {
-			std::cout << e->src->value << "-(" << e->weight <<  ")->" << e->dest->value << '\n';
+			//std::cout << e->src->value << "-(" << e->weight <<  ")->" << e->dest->value << '\n';
 			min_cut += e->weight;
 		}
 	}
@@ -248,14 +248,14 @@ Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* 
 		}
 
 		//augment the original graph
-		std::cout << "===Augmented Path===\n";
+		//std::cout << "===Augmented Path===\n";
 		augment_path(g, path);
-		g.print();
+		//g.print();
 		
 		//create a residual graph
-		std::cout << "===Residual Network===\n";
+		//std::cout << "===Residual Network===\n";
 		rGraph = construct_residual_graph(g);
-		rGraph.print();
+		//rGraph.print();
 		
 		path = bfs(rGraph, 
 				   rGraph.vf->make_vertex(src->value),
@@ -264,10 +264,10 @@ Graph<int> ford_fulkerson_detailed(Graph<int> g, Vertex<int>* src, Vertex<int>* 
 
 	//get the min cut from the residual graph
 	int min_cut = get_min_cut(g, rGraph, src, sink);
-	std::cout << "Min cut= " << min_cut << '\n';
+	//std::cout << "Min cut= " << min_cut << '\n';
 	//get the max flow from the residual graph
 	int max_flow = get_max_flow(g, sink);
-	std::cout << "Max flow= " << max_flow << '\n';
+	//std::cout << "Max flow= " << max_flow << '\n';
 
 	return g;
 }
@@ -284,8 +284,8 @@ Graph<int> ford_fulkerson(Graph<int> g, Vertex<int>* src, Vertex<int>* sink) {
 
 	//====timing stuff======
 	// std::chrono::time_point<std::chrono::system_clock> start, end;
- //    start = std::chrono::system_clock::now();
-    //=========
+	//start = std::chrono::system_clock::now();
+	//=========
 
 	std::vector< Vertex<int>* > path = bfs(rGraph, rSrc, rSink);
 
@@ -358,17 +358,17 @@ Vertex<int> get_src(Graph<int> &g) {
 
 	//once we're done V should contain only src nodes
 	if(V.size() == 1) {
-		std::cout << (*V.begin()).value << '\n';
+		//std::cout << (*V.begin()).value << '\n';
 		return *V.begin();
 	}
 	else if(V.empty()) {
-		std::cout << "WARNING : ERROR : "
-		          << "Graph has no sources. Cannot perform Ford-Fulkerson.\n";
+		//std::cout << "WARNING : ERROR : "
+		          //<< "Graph has no sources. Cannot perform Ford-Fulkerson.\n";
 		Vertex<int> v(-100000001);
 		return v;
 	}
 	else {
-		std::cout << "Multiple sources. Forming super source. \n";
+		//std::cout << "Multiple sources. Forming super source. \n";
 
 		// Assigne all source nodes a super source
 		Vertex<int> *super_source = g.vf->make_vertex(-1);
@@ -392,17 +392,17 @@ Vertex<int> get_sink(Graph<int> &g) {
 		}
 	}
 	if(sinks.size() == 1) {
-		std::cout << (*sinks.begin()).value << '\n';
+		//std::cout << (*sinks.begin()).value << '\n';
 		return *sinks.begin();
 	}
 	else if(sinks.empty()) {
-		std::cout << "WARNING : ERROR : "
-		          << "Graph has no sinks. Cannot perform Ford-Fulkerson.\n";
+		//std::cout << "WARNING : ERROR : "
+		          //<< "Graph has no sinks. Cannot perform Ford-Fulkerson.\n";
 		Vertex<int> v(-100000000);
 		return v;
 	}
 	else {
-		std::cout << "Multiple sinks. Forming super sink. \n";
+		//std::cout << "Multiple sinks. Forming super sink. \n";
 
 		// Assigne all sinks a super sink
 		Vertex<int> *super_sink = g.vf->make_vertex(-2);
