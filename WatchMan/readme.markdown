@@ -14,7 +14,7 @@ $ mkdir build <br/>
 $ export cxx=gcc-4.8 <br/>
 $ cd build <br/>
 $ cmake .. <br/>
-$ make <br/>
+$ make <br/> <br/>
 	At this point, you will have created an executable called ‘watchman.’ Included with our source code at a number of test cases. To run our program with the test cases:<br/>
 
 $ ./watchman -b ../test/filename.txt 0 3 (for BFS cases)<br/>
