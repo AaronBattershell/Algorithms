@@ -9,7 +9,7 @@
 Our solution to the “Watch, Man!” problem and the Ford-Fulkerson network flow problem is written in C++11. In order to compile and run out code, a user needs to have a compiler capable of compiling the C++11 standard. Our environment was Linux, compiled with gcc-4.8, and built with CMake 3.0. 
 
 <h4>How to Run Our Program</h4>
-You can compile our code using CMake. Included with our source code is a CMakeLists.txt file. As our project was built on Linux machines, instructions to do so will be in Linux command line. <br/>
+You can compile our code using CMake. Included with our source code is a CMakeLists.txt file. As our project was built on Linux machines, instructions to do so will be in Linux command line. <br/><br/>
 $ mkdir build <br/>
 $ export cxx=gcc-4.8 <br/>
 $ cd build <br/>
