@@ -132,21 +132,19 @@ int main(int argc, char* argv[]) {
 	else if(opt == "-m") {
 		if (argc != 4) {
 			std::cout << "Not enough parameters given.\n";
-			std::cout << "Found " << argc << " parameters. Need " << 4 << " parameters.\n";
+			std::cout << "Found " << argc << " parameters. Need 4 parameters.\n";
 			return -1;
 		}
 
 		std::cout << "You have chosen Museum Problem with file " << argv[2] << '\n';
 
 		std::chrono::time_point<std::chrono::system_clock> start, end;
-    	start = std::chrono::system_clock::now();
+		start = std::chrono::system_clock::now();
 
 		watchman(argv[2], argv[3]).solve();
 
 		end = std::chrono::system_clock::now();
-
 		std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
 		std::chrono::duration<double> elapsed_seconds = end-start;
     	
  
