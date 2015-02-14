@@ -2,8 +2,10 @@
 using namespace std;
 
 watchman::watchman(string inFileName, string outFileName)
-	:input(inFileName), out(outFileName, fstream::out)
-{ }
+	:input(inFileName), out(outFileName, fstream::out) { 
+
+	cout << "Output written to " << outFileName << endl;
+}
 
 void watchman::solve() {
 	for (int iter = 1; input.get_next_problem(); ++iter) {	
@@ -17,11 +19,6 @@ void watchman::solve() {
 		Vertex<int> *src = g.vf->make_vertex(get_src(g).value);
 		Vertex<int> *sink = g.vf->make_vertex(get_sink(g).value);
 
-		//cout << "===Starting Graph===\n";
-		//cout << "(-1 super sorce, -2 super sink, node 0 - " << input.guard_setVector.size() - 1;
-		//cout << " gaurds, nodes " << input.guard_setVector.size() << " - ";
-		//cout << input.guard_setVector.size() + input.paint_setVector.size() - 1 << " paintings" << endl;
-		
 		printReuslt(ford_fulkerson(g, src, sink), iter);
 
 		delete g.vf;
@@ -102,7 +99,7 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 
 	watchedArt = get_max_flow(g, sink);
 	
-	cout << "Case " << iter << ": " << (neededArt == watchedArt ? "Yes" : "No") << endl;
+	//cout << "Case " << iter << ": " << (neededArt == watchedArt ? "Yes" : "No") << endl;
 	out << "Case " << iter << ": " << (neededArt == watchedArt ? "Yes" : "No") << endl;
 	
 	// Provided a good case has been found, print out which guards watched which painting
@@ -122,7 +119,7 @@ void watchman::printReuslt(Graph<int> g, int iter) {
 				}
 			}
 
-			cout << output.substr(0, output.size()-1) + '\n';
+			//cout << output.substr(0, output.size()-1) + '\n';
 			out << output.substr(0, output.size()-1) + '\n';
 		}
 	}
