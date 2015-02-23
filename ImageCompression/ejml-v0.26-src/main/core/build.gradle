@@ -1,0 +1,9 @@
+dependencies {
+    testCompile project(':main:experimental')
+}
+
+idea {
+    module {
+        name = "EJML Core"
+    }
+}

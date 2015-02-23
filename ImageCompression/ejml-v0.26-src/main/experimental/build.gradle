@@ -1,0 +1,10 @@
+dependencies {
+    compile project(':main:core')
+    compile project(':main:equation')
+}
+
+idea {
+    module {
+        name = "EJML Experimental"
+    }
+}
