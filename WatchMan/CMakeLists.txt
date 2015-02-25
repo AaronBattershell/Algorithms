@@ -13,7 +13,6 @@ add_executable(watchman
 	parsing.cpp
 	intersection.hpp
 	intersection.cpp
-	points.hpp
 	ffs.hpp
 	ffs.cpp
 	watchman.hpp
