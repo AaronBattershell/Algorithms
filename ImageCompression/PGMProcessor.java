@@ -134,7 +134,7 @@ public class PGMProcessor {
     
     //reads bytes from fileinputstream
     //converts bytes back into integers and then outputs PGM
-    public void binaryToPgm(String filePath) throws Exception {
+    public int[][] binaryToPgm(String filePath) throws Exception {
 		//values we're looking for
 		short width = 0;
 		short height = 0;
@@ -175,7 +175,19 @@ public class PGMProcessor {
 		catch(Exception e) {
 			System.err.println("Failed to get max value bytes");
 		}
-		//last is two bytes per image
+		
+		int[][] grid = new int[height][width];
+		//last is a bunch of 2 bytes for the image grid
+		for(int i = 0; i < height; ++i) {
+			for(int j = 0; j < width; ++j) {
+				byte[] buffer = new byte[2];
+				fis.read(buffer);
+				ByteBuffer bb = ByteBuffer.wrap(buffer);
+				grid[i][j] = (int) bb.getShort();
+			}
+		}
+		
+		return grid;
 	}
 
     public static void main(String args[]) {
@@ -185,7 +197,8 @@ public class PGMProcessor {
 			int[][] out = r.readPGM(filePath);
             //r.printPGM("pgm_files/out.pgm", out);
             r.writeBinaryPGM("pgm_out/out.bin", out);
-            r.binaryToPgm("pgm_out/out.bin");
+            int[][] pgm = r.binaryToPgm("pgm_out/out.bin");
+            r.printPGM("pgm_out/out.pgm", pgm);
 		}
 		catch(Exception ex) {
 			//ex.printStackTrace();
