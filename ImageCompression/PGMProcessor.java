@@ -81,7 +81,6 @@ public class PGMProcessor {
 
             //wrie the height integer
             short sHei = (short) picHeight;
-            System.out.println(sHei);
             ByteBuffer bHei = ByteBuffer.allocate(2);
             bHei.putShort(sHei);
             fos.write(bHei.array());
@@ -132,14 +131,74 @@ public class PGMProcessor {
 
         return data2D;
     }
+    
+    //reads bytes from fileinputstream
+    //converts bytes back into integers and then outputs PGM
+    public int[][] binaryToPgm(String filePath) throws Exception {
+		//values we're looking for
+		short width = 0;
+		short height = 0;
+		short max = 0;
+		
+		//read in the file
+		File file = new File(filePath);
+		filePath = file.getAbsolutePath();
+		FileInputStream fis = new FileInputStream(filePath);
+		//first 2 bytes are the width
+		try {
+			byte[] buffer = new byte[2];
+			fis.read(buffer);
+			ByteBuffer bb = ByteBuffer.wrap(buffer);
+			width = bb.getShort();
+			System.out.println(width);
+		}
+		catch(Exception e) {
+			System.err.println("Failed to get width bytes");
+		}
+		//second 2 bytes are the length
+		try {
+			byte[] buffer = new byte[2];
+			fis.read(buffer);
+			ByteBuffer bb = ByteBuffer.wrap(buffer);
+			height = bb.getShort();
+			System.out.println(height);
+		}
+		catch(Exception e) {
+			System.err.println("Failed to get height bytes");
+		}
+		//next is one byte for the maxvalue
+		try {
+			int in = fis.read();
+			if(in != -1)
+				System.out.println(in);
+		}
+		catch(Exception e) {
+			System.err.println("Failed to get max value bytes");
+		}
+		
+		int[][] grid = new int[height][width];
+		//last is a bunch of 2 bytes for the image grid
+		for(int i = 0; i < height; ++i) {
+			for(int j = 0; j < width; ++j) {
+				byte[] buffer = new byte[2];
+				fis.read(buffer);
+				ByteBuffer bb = ByteBuffer.wrap(buffer);
+				grid[i][j] = (int) bb.getShort();
+			}
+		}
+		
+		return grid;
+	}
 
     public static void main(String args[]) {
         PGMProcessor r = new PGMProcessor();
-        String filePath = "pgm_files/baboon.ascii.pgm";
+        String filePath = "pgm/baboon.ascii.pgm";
         try {
 			int[][] out = r.readPGM(filePath);
             //r.printPGM("pgm_files/out.pgm", out);
-            r.writeBinaryPGM("pgm_files/out.bin", out);
+            r.writeBinaryPGM("pgm_out/out.bin", out);
+            int[][] pgm = r.binaryToPgm("pgm_out/out.bin");
+            r.printPGM("pgm_out/out.pgm", pgm);
 		}
 		catch(Exception ex) {
 			//ex.printStackTrace();
