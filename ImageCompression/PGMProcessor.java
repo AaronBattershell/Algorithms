@@ -25,7 +25,6 @@ public class PGMProcessor {
         writer.println("P2");
         writer.println("# " + outputPath);
         writer.println(grid[0].length + " " + grid.length);
-        writer.println(maxvalue);
         
         for (int arr[] : grid) {
             for (int iter : arr) {
