@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
 
 		fstream out(argv[4], fstream::out);
 
+		out << dataPoints << ' ' << dimensions << endl;
+
 		for (int points = 1; points <= dataPoints; ++points) {
 			for (int dimmension = 0; dimmension < dimensions; ++dimmension) {
 				out << setw(10) << left << points + varianceRange + varianceRange * ((rand() % 101) / 100.0) * (rand() % 2 ? 1 : -1) << ' ';
