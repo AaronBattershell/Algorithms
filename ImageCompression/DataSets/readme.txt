@@ -13,6 +13,6 @@ Taken from PointGenerator.cpp
 
 	Sample arguments for running: ./PG.out 100 3 10 Output.txt
 	
-Other
-	For the SAT files each states scores are listed from 1990 - 2004 left to right.
+SAT Files
+	Each states scores are listed from 1990 - 2004 left to right.
 	Source: http://mathforum.org/workshops/sum96/data.collections/datalibrary/data.set6.html

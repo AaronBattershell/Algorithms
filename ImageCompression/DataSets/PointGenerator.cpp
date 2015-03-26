@@ -25,7 +25,9 @@ using namespace std;
 int main(int argc, char **argv) {
 	if (argc != 5) {
 		cout << "Unexpected number of arguments." << endl
-			<< "Expected: [DATA_POINTS] [DIMENSIONS] [VARIANCE_RANGE] [OUTPUT_FILE_NAME]" << endl;
+		     << "Expected: [DATA_POINTS] [DIMENSIONS] [VARIANCE_RANGE] [OUTPUT_FILE_NAME]" << endl;
+
+		return 0;
 	}
 
 	try {
