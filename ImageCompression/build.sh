@@ -5,4 +5,5 @@ echo "Recompiling..."
 javac SVD.java 
 javac PGMProcessor.java 
 javac Project.java
+javac PCA.java
 echo "Done."
