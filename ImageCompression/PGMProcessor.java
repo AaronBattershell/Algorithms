@@ -370,9 +370,9 @@ public class PGMProcessor {
                     //to store a decimal value as a short we multiply by 100000
                     // we know it can never exceed the size of short because vectors are orthogonal
                     // therefore being no larger than 1
-                    short value = (short)(Uprime.get(row, col) * 10000);
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
+                    float value = (float) Uprime.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
                 }
@@ -384,9 +384,9 @@ public class PGMProcessor {
             int diagRows = diag.numRows();
             for(int row = 0; row < diagRows; ++row) {
                 for(int col = 0; col < diagCols; ++col) {
-                    short value = (short)Math.round(diag.get(row, col));
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
+                    float value = (float) diag.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
                 }
@@ -398,9 +398,9 @@ public class PGMProcessor {
             int Vrows = Vprime.numRows();
             for(int row = 0; row < Vrows; ++row) {
                 for(int col = 0; col < Vcols; ++col) {
-                    short value = (short)(Vprime.get(row, col) * 10000);
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
+                    float value = (float) Vprime.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
                 }
@@ -485,28 +485,28 @@ public class PGMProcessor {
             //get the values of the u matrix
             for(int row = 0; row < m; ++row) {
                 for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[2];
+                    byte[] buffer = new byte[4];
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    u[row][col] = ((double) bb.getShort()) / 10000;
+                    u[row][col] = (double) bb.getFloat();
                 }
             }
 
             //get the eigen values for the w matrix
             for(int i = 0; i < k; ++i) {
-                byte[] buffer = new byte[2];
+                byte[] buffer = new byte[4];
                 fis.read(buffer);
                 ByteBuffer bb = ByteBuffer.wrap(buffer);
-                diag[i] = bb.getShort();
+                diag[i] = (double) bb.getFloat();
             }
 
             //get the v matrix
             for(int row = 0; row < n; ++row) {
                 for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[2];
+                    byte[] buffer = new byte[4];
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    v[row][col] = ((double) bb.getShort()) / 10000;
+                    v[row][col] = (double) bb.getFloat();
                 }
             }
         }
@@ -523,7 +523,11 @@ public class PGMProcessor {
         int[][] pgm = new int[A.numRows()][A.numCols()];
         for(int row = 0; row < A.numRows(); ++row) {
             for(int col = 0; col < A.numCols(); ++col) {
-                pgm[row][col] = (int) Math.round(A.get(row, col));
+                int val =  (int) Math.round(A.get(row, col));
+                if(val < 0) {
+                    val = 0;
+                }
+                pgm[row][col] = val;
             }
         }
         try {
