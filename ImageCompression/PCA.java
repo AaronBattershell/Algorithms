@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-package org.ejml.example;
+//package org.ejml.example;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.DecompositionFactory;
@@ -64,11 +64,11 @@ public class PCA {
     private int numComponents;
 
     // where the data is stored
-    private DenseMatrix64F A = new DenseMatrix64F(1,1);
+    public DenseMatrix64F A = new DenseMatrix64F(1,1);
     private int sampleIndex;
 
     // mean values of each element across all the samples
-    double mean[];
+    public double mean[];
 
     public PCA() {
     }
