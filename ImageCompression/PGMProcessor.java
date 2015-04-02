@@ -216,6 +216,9 @@ public class PGMProcessor {
         File headerFile = new File(headerPath);
         File svdFile = new File(svdPath);
 
+        headerFile = new File("pgm_svd/" + headerFile.getName());
+        svdFile = new File("pgm_svd/" + svdFile.getName());
+
         PrintWriter headWriter = new PrintWriter(headerFile);
         PrintWriter svdWriter = new PrintWriter(svdFile);
 
@@ -260,17 +263,17 @@ public class PGMProcessor {
 
         svdWriter.close();
 
-        System.out.println("A: ");
-        System.out.println(A);
+        // System.out.println("A: ");
+        // System.out.println(A);
 
-        System.out.println("U: ");
-        System.out.println(U);
+        // System.out.println("U: ");
+        // System.out.println(U);
 
-        System.out.println("W: ");
-        System.out.println(W);
+        // System.out.println("W: ");
+        // System.out.println(W);
 
-        System.out.println("V: ");
-        System.out.println(V);
+        // System.out.println("V: ");
+        // System.out.println(V);
     }
 
     public void svdPGMApprox(String headerPath, String svdPath, int k) throws Exception {
@@ -334,12 +337,18 @@ public class PGMProcessor {
         // System.out.println(Ak);
 
         File file = new File("image_b.pgm.SVD");
+        File raw = new File("image_out.SVD.txt");
+
+
         FileOutputStream fos = null;
+        PrintWriter rawout = null;
 
         ArrayList<byte[]> bin = new ArrayList<byte[]>();
 
         try {
             fos = new FileOutputStream(file);
+            rawout = new PrintWriter(raw);
+
             //store width
             ByteBuffer bb = ByteBuffer.allocate(2);
             bb.putShort((short) width);
@@ -356,6 +365,12 @@ public class PGMProcessor {
             bb = ByteBuffer.allocate(2);
             bb.putShort((short) k);
             fos.write(bb.array());
+
+            //rawout
+            rawout.write(width + "\n");
+            rawout.write(height + "\n");
+            rawout.write(maxValue + "\n");
+            rawout.write(k + "\n");
         } catch(Exception e) { e.printStackTrace(); }
 
 
@@ -370,11 +385,13 @@ public class PGMProcessor {
                     //to store a decimal value as a short we multiply by 100000
                     // we know it can never exceed the size of short because vectors are orthogonal
                     // therefore being no larger than 1
-                    short value = (short)(Uprime.get(row, col) * 10000);
+                    short value = (short)(Uprime.get(row, col) * 65535);
                     ByteBuffer bb = ByteBuffer.allocate(2);
                     bb.putShort(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
+
+                    rawout.write((int)value + "\n");
                 }
             }
 
@@ -389,6 +406,8 @@ public class PGMProcessor {
                     bb.putShort(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
+
+                    rawout.write((int)value  + "\n");
                 }
             }
 
@@ -398,15 +417,18 @@ public class PGMProcessor {
             int Vrows = Vprime.numRows();
             for(int row = 0; row < Vrows; ++row) {
                 for(int col = 0; col < Vcols; ++col) {
-                    short value = (short)(Vprime.get(row, col) * 10000);
+                    short value = (short)(Vprime.get(row, col) * 65535);
                     ByteBuffer bb = ByteBuffer.allocate(2);
                     bb.putShort(value);
                     bin.add(bb.array());
                     fos.write(bb.array());
+
+                    rawout.write((int)value  + "\n");
                 }
             }
 
             fos.close();
+            rawout.close();
         }
 
         catch(Exception e) { e.printStackTrace(); }
@@ -488,7 +510,9 @@ public class PGMProcessor {
                     byte[] buffer = new byte[2];
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    u[row][col] = ((double)bb.getShort()) / 10000;
+                    short s = bb.getShort();
+                    u[row][col] = ((double)s) / 65535;
+                    System.out.println(s);
                 }
             }
 
@@ -497,7 +521,9 @@ public class PGMProcessor {
                 byte[] buffer = new byte[2];
                 fis.read(buffer);
                 ByteBuffer bb = ByteBuffer.wrap(buffer);
-                diag[i] = bb.getShort();
+                short s = bb.getShort();
+                diag[i] = (double)s;
+                System.out.println(s);
             }
 
             //get the v matrix
@@ -506,7 +532,9 @@ public class PGMProcessor {
                     byte[] buffer = new byte[2];
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    v[row][col] = (double)(bb.getShort()) / 10000;
+                    short s = bb.getShort();
+                    v[row][col] = ((double)s) / 65535;
+                    System.out.println(s);
                 }
             }
         }
