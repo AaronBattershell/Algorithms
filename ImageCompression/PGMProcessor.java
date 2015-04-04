@@ -334,26 +334,15 @@ public class PGMProcessor {
         SimpleMatrix Vprime = V.extractMatrix(0, SimpleMatrix.END, 0, k);
         SimpleMatrix VTprime = Vprime.transpose();
 
-        // System.out.println(Uprime);
-        // System.out.println(Wprime);
-        // System.out.println(Vprime.transpose());
-
-        // SimpleMatrix A = U.mult(W).mult(V.transpose());
-        // SimpleMatrix Ak = Uprime.mult(Wprime).mult(VTprime);
-        // System.out.println(Ak);
-
         File file = new File("image_b.pgm.SVD");
         File raw = new File("image_out.SVD.txt");
 
-
         FileOutputStream fos = null;
-        PrintWriter rawout = null;
 
         ArrayList<byte[]> bin = new ArrayList<byte[]>();
 
         try {
             fos = new FileOutputStream(file);
-            rawout = new PrintWriter(raw);
 
             //store width
             ByteBuffer bb = ByteBuffer.allocate(2);
@@ -372,11 +361,6 @@ public class PGMProcessor {
             bb.putShort((short) k);
             fos.write(bb.array());
 
-            //rawout
-            rawout.write(width + "\n");
-            rawout.write(height + "\n");
-            rawout.write(maxValue + "\n");
-            rawout.write(k + "\n");
         } catch(Exception e) { e.printStackTrace(); }
 
 
@@ -391,13 +375,10 @@ public class PGMProcessor {
                     //to store a decimal value as a short we multiply by 100000
                     // we know it can never exceed the size of short because vectors are orthogonal
                     // therefore being no larger than 1
-                    short value = (short) encode( (float)(Uprime.get(row, col)) );
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-
-                    rawout.write((int)value + "\n");
+                    byte[] value = encode( (float)(Uprime.get(row, col)) );
+                    System.out.println(decode(value));
+                    bin.add(value);
+                    fos.write(value);
                 }
             }
 
@@ -407,13 +388,10 @@ public class PGMProcessor {
             int diagRows = diag.numRows();
             for(int row = 0; row < diagRows; ++row) {
                 for(int col = 0; col < diagCols; ++col) {
-                    short value = (short) encode( (float)(diag.get(row, col)) );
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-
-                    rawout.write((int)value  + "\n");
+                    byte[] value =  encode( (float)(diag.get(row, col)) );
+                    System.out.println(decode(value));
+                    bin.add(value);
+                    fos.write(value);
                 }
             }
 
@@ -423,18 +401,14 @@ public class PGMProcessor {
             int Vrows = Vprime.numRows();
             for(int row = 0; row < Vrows; ++row) {
                 for(int col = 0; col < Vcols; ++col) {
-                    short value = (short) encode( (float)(Vprime.get(row, col)) );
-                    ByteBuffer bb = ByteBuffer.allocate(2);
-                    bb.putShort(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-
-                    rawout.write((int)value  + "\n");
+                    byte[] value = encode( (float)(Vprime.get(row, col)) );
+                    System.out.println(decode(value));
+                    bin.add(value);
+                    fos.write(value);
                 }
             }
 
             fos.close();
-            rawout.close();
         }
 
         catch(Exception e) { e.printStackTrace(); }
@@ -656,31 +630,25 @@ public class PGMProcessor {
             //get the values of the u matrix
             for(int row = 0; row < m; ++row) {
                 for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[2];
+                    byte[] buffer = new byte[3];
                     fis.read(buffer);
-                    ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    short s = bb.getShort();
-                    u[row][col] = (double) decode(s);
+                    u[row][col] = (double) decode(buffer);
                 }
             }
 
             //get the eigen values for the w matrix
             for(int i = 0; i < k; ++i) {
-                byte[] buffer = new byte[2];
+                byte[] buffer = new byte[3];
                 fis.read(buffer);
-                ByteBuffer bb = ByteBuffer.wrap(buffer);
-                short s = bb.getShort();
-                diag[i] = (double) decode(s);
+                diag[i] = (double) decode(buffer);
             }
 
             //get the v matrix
             for(int row = 0; row < n; ++row) {
                 for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[2];
+                    byte[] buffer = new byte[3];
                     fis.read(buffer);
-                    ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    short s = bb.getShort();
-                    v[row][col] = (double) decode(s);
+                    v[row][col] = (double) decode(buffer);
                 }
             }
         }
@@ -838,63 +806,8 @@ public class PGMProcessor {
         }
     }
 
-    public int encode(float fval) {
-        int fbits = Float.floatToIntBits( fval );
-        int sign = fbits >>> 16 & 0x8000;          // sign only
-        int val = ( fbits & 0x7fffffff ) + 0x1000; // rounded value
-
-        if( val >= 0x47800000 )               // might be or become NaN/Inf
-        {                                     // avoid Inf due to rounding
-            if( ( fbits & 0x7fffffff ) >= 0x47800000 )
-            {                                 // is or must become NaN/Inf
-                if( val < 0x7f800000 )        // was value but too large
-                    return sign | 0x7c00;     // make it +/-Inf
-                return sign | 0x7c00 |        // remains +/-Inf or NaN
-                    ( fbits & 0x007fffff ) >>> 13; // keep NaN (and Inf) bits
-            }
-            return sign | 0x7bff;             // unrounded not quite Inf
-        }
-        if( val >= 0x38800000 )               // remains normalized value
-            return sign | val - 0x38000000 >>> 13; // exp - 127 + 15
-        if( val < 0x33000000 )                // too small for subnormal
-            return sign;                      // becomes +/-0
-        val = ( fbits & 0x7fffffff ) >>> 23;  // tmp exp for subnormal calc
-        int ret = sign | ( ( fbits & 0x7fffff | 0x800000 ) // add subnormal bit
-             + ( 0x800000 >>> val - 102 )     // round depending on cut off
-          >>> 126 - val );   // div by 2^(1-(exp-127+15)) and >> 13 | exp=0
-
-        System.out.println(ret);
-        return ret;
-    }
-
-    public float decode(int hbits) {
-        int mant = hbits & 0x03ff;            // 10 bits mantissa
-        int exp =  hbits & 0x7c00;            // 5 bits exponent
-        if( exp == 0x7c00 )                   // NaN/Inf
-            exp = 0x3fc00;                    // -> NaN/Inf
-        else if( exp != 0 )                   // normalized value
-        {
-            exp += 0x1c000;                   // exp - 15 + 127
-            if( mant == 0 && exp > 0x1c400 )  // smooth transition
-                return Float.intBitsToFloat( ( hbits & 0x8000 ) << 16
-                                                | exp << 13 | 0x3ff );
-        }
-        else if( mant != 0 )                  // && exp==0 -> subnormal
-        {
-            exp = 0x1c400;                    // make it normal
-            do {
-                mant <<= 1;                   // mantissa * 2
-                exp -= 0x400;                 // decrease exp by 1
-            } while( ( mant & 0x400 ) == 0 ); // while not normal
-            mant &= 0x3ff;                    // discard subnormal bit
-        }                                     // else +/-0 -> +/-0
-        return Float.intBitsToFloat(          // combine all parts
-            ( hbits & 0x8000 ) << 16          // sign  << ( 31 - 15 )
-            | ( exp | mant ) << 13 );         // value << ( 23 - 10 )
-    }
-
     //adopted from http://javastack.tumblr.com/post/13740168684/extracting-sign-exponent-and-mantissa-from-a
-    public byte[] encode2(float value) {
+    public byte[] encode(float value) {
 
         BitSet byte1 = new BitSet(7);
 
@@ -904,7 +817,7 @@ public class PGMProcessor {
 
         //get the exponent value as a short
         short sfexp = (short) fexp;
-        System.out.println(sfexp);
+        // System.out.println(sfexp);
 
         //get the abs value of exponent
         //store it in 7 bits
@@ -912,7 +825,7 @@ public class PGMProcessor {
 
         BigInteger bexp = new BigInteger( ((Short)sfexp).toString() );
 
-        System.out.println(bexp);
+        // System.out.println(bexp);
         BigInteger bias = new BigInteger("63");
         bexp = bexp.add(bias);
         String binExpStr = bexp.toString(2);
@@ -927,35 +840,35 @@ public class PGMProcessor {
         //fill in the bits into the first 7 bits
         int cnt = 0;
         for(int i = binExpStr.length() - 1; i >= 0; --i) {
-            System.out.print(binExpStr.charAt(i));
+            // System.out.print(binExpStr.charAt(i));
 
             if(binExpStr.charAt(i) == '1') {
                 expBits.set(cnt);
             }
             cnt++;
         }
-        System.out.println();
+        // System.out.println();
 
         //set the 8th bit if its negative
         if(fsign == 1) {
             expBits.set(7);
         }
 
-        for(int i = 0; i < 8; ++i) {
-            System.out.println("Bit" + i + ":" + expBits.get(i));
-        }
+        // for(int i = 0; i < 8; ++i) {
+        //     System.out.println("Bit" + i + ":" + expBits.get(i));
+        // }
 
-        System.out.println();
-        System.out.println("EXP BITS: " + expBits);
+        // System.out.println();
+        // System.out.println("EXP BITS: " + expBits);
 
         //store the mantissa
         int fmantissa = fbits & ((1 << 23) - 1);
         short smantissa = (short) (fmantissa / 256);
-        System.out.println("MANTISSA: " + fmantissa + " " + smantissa);
+        // System.out.println("MANTISSA: " + fmantissa + " " + smantissa);
 
-        System.out.println(fsign + " " + fexp + " "  + sfexp + " " + fmantissa);
-        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | fmantissa));
-        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | (int)(smantissa * 256)));
+        // System.out.println(fsign + " " + fexp + " "  + sfexp + " " + fmantissa);
+        // System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | fmantissa));
+        // System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | (int)(smantissa * 256)));
 
         byte[] encode = new byte[3];
         for (int i=0; i<expBits.length(); i++) {
@@ -974,12 +887,12 @@ public class PGMProcessor {
         return encode;
     }
 
-    public float decode2(byte[] bytes) {
-        System.out.println("=====DECODE=====");
+    public float decode(byte[] bytes) {
+        // System.out.println("=====DECODE=====");
         byte[] expByte = new byte[1];
         expByte[0] = bytes[0];
         BitSet expBits = BitSet.valueOf(expByte);
-        System.out.println(expBits);
+        // System.out.println(expBits);
 
         //if the sign is negative
         int fsign = 0;
@@ -1000,7 +913,7 @@ public class PGMProcessor {
 
         int fexp = Integer.parseInt(bitStr, 2);
         fexp -= 63;
-        System.out.println(fexp);
+        // System.out.println(fexp);
 
         //mantissa recovery
         byte[] sbytes = new byte[2];
@@ -1009,10 +922,10 @@ public class PGMProcessor {
         ByteBuffer bb = ByteBuffer.wrap(sbytes);
         int mantissa = (int)(bb.getShort()) * 256;
 
-        System.out.println(mantissa);
-        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | mantissa));
+        // System.out.println(mantissa);
+        float f = Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | mantissa);
 
-        return 1;
+        return f;
     }
 
 
@@ -1022,8 +935,8 @@ public class PGMProcessor {
         try {
             // grid = pp.readPGM(args[0]);
             // pp.pgmToSVD(args[0] + "_header.txt", args[0] + ".SVD", grid);
-            byte[] fval = pp.encode2(240.14f);
-            float decode = pp.decode2(fval);
+            // byte[] fval = pp.encode2(-0.0068513555f);
+            // float decode = pp.decode2(fval);
         } catch(Exception e) { e.printStackTrace(); }
     }
 }
