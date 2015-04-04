@@ -7,6 +7,8 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.math.BigInteger;
 import org.ejml.simple.*;
 
 public class PGMProcessor {
@@ -121,6 +123,10 @@ public class PGMProcessor {
         picWidth = scan.nextInt();
         picHeight = scan.nextInt();
         maxvalue = scan.nextInt();
+
+        System.out.println(picWidth);
+        System.out.println(picHeight);
+        System.out.println(maxvalue);
 
         // read the image data
         int[][] data2D = new int[picHeight][picWidth];
@@ -385,7 +391,7 @@ public class PGMProcessor {
                     //to store a decimal value as a short we multiply by 100000
                     // we know it can never exceed the size of short because vectors are orthogonal
                     // therefore being no larger than 1
-                    short value = (short)(Uprime.get(row, col) * 65535);
+                    short value = (short) encode( (float)(Uprime.get(row, col)) );
                     ByteBuffer bb = ByteBuffer.allocate(2);
                     bb.putShort(value);
                     bin.add(bb.array());
@@ -401,7 +407,7 @@ public class PGMProcessor {
             int diagRows = diag.numRows();
             for(int row = 0; row < diagRows; ++row) {
                 for(int col = 0; col < diagCols; ++col) {
-                    short value = (short)Math.round(diag.get(row, col));
+                    short value = (short) encode( (float)(diag.get(row, col)) );
                     ByteBuffer bb = ByteBuffer.allocate(2);
                     bb.putShort(value);
                     bin.add(bb.array());
@@ -417,7 +423,7 @@ public class PGMProcessor {
             int Vrows = Vprime.numRows();
             for(int row = 0; row < Vrows; ++row) {
                 for(int col = 0; col < Vcols; ++col) {
-                    short value = (short)(Vprime.get(row, col) * 65535);
+                    short value = (short) encode( (float)(Vprime.get(row, col)) );
                     ByteBuffer bb = ByteBuffer.allocate(2);
                     bb.putShort(value);
                     bin.add(bb.array());
@@ -433,8 +439,151 @@ public class PGMProcessor {
 
         catch(Exception e) { e.printStackTrace(); }
 
-        System.out.println("Original size: " + (height * width));
-        System.out.println("SVD size: " + bin.size());
+        long origin_s = width * height * 4;
+        long comp_s = file.length();
+        double comp_rate = (origin_s - comp_s)  * 1.0 / origin_s;
+        System.out.println("Original size: " + origin_s + " bytes." );
+        System.out.println("SVD size: " + comp_s + " bytes");
+        System.out.println("Compression rate: " + (comp_rate * 100) + "%");
+    }
+
+    public void svdPGMApprox2(String headerPath, String svdPath, int k) throws Exception {
+        File headerFile = new File(headerPath);
+        File svdFile = new File(svdPath);
+
+        Scanner sc = new Scanner(headerFile);
+        int width = 0;
+        int height = 0;
+        int maxValue = 0;
+        try {
+            width = sc.nextInt();
+            height = sc.nextInt();
+            maxValue = sc.nextInt();
+        } catch(Exception e) {
+            System.err.println("Invalid header file");
+        }
+
+        sc = new Scanner(svdFile);
+        int m = height;
+        int n = width;
+        //U is an m x m matrix stored first in the file
+        double[][] u = new double[m][m];
+        for(int row = 0; row < m; ++row) {
+            for(int col = 0; col < m; ++col) {
+                u[row][col] = (double) sc.nextFloat();
+            }
+        }
+
+        //W is an m x n matrix stored second in the file
+        double[][] w = new double[m][n];
+        for(int row = 0; row < m; ++row) {
+            for(int col = 0; col < n; ++col) {
+                w[row][col] = (double) sc.nextFloat();
+            }
+        }
+
+        //V is an n x n matrix stored last in the file
+        double[][] v = new double[n][n];
+        for(int row = 0; row < n; ++row) {
+            for(int col = 0; col < n; ++col) {
+                v[row][col] = (double) sc.nextFloat();
+            }
+        }
+
+        SimpleMatrix U = new SimpleMatrix(u);
+        SimpleMatrix W = new SimpleMatrix(w);
+        SimpleMatrix V = new SimpleMatrix(v);
+
+        SimpleMatrix Uprime = U.extractMatrix(0, SimpleMatrix.END, 0, k);
+        SimpleMatrix Wprime = W.extractMatrix(0, k, 0, k);
+        SimpleMatrix Vprime = V.extractMatrix(0, SimpleMatrix.END, 0, k);
+        SimpleMatrix VTprime = Vprime.transpose();
+
+        File file = new File("image_b.pgm.SVD");
+        File raw = new File("image_out.SVD.txt");
+
+        FileOutputStream fos = null;
+
+        ArrayList<byte[]> bin = new ArrayList<byte[]>();
+
+        try {
+            fos = new FileOutputStream(file);
+            //store width
+            ByteBuffer bb = ByteBuffer.allocate(2);
+            bb.putShort((short) width);
+            fos.write(bb.array());
+            //store height
+            bb = ByteBuffer.allocate(2);
+            bb.putShort((short) height);
+            fos.write(bb.array());
+            //store maxvalue
+            bb = ByteBuffer.allocate(2);
+            bb.putShort((short) maxValue);
+            fos.write(bb.array());
+            //store num of eigen values
+            bb = ByteBuffer.allocate(2);
+            bb.putShort((short) k);
+            fos.write(bb.array());
+        } catch(Exception e) { e.printStackTrace(); }
+
+
+        //store array of truncated floats
+        try {
+
+            //write U first
+            int Ucols = Uprime.numCols();
+            int Urows = Uprime.numRows();
+            for(int row = 0; row < Urows; ++row) {
+                for(int col = 0; col < Ucols; ++col) {
+                    // we know it can never exceed the size of short because vectors are orthogonal
+                    // therefore being no larger than 1
+                    float value = (float) Uprime.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
+                    bin.add(bb.array());
+                    fos.write(bb.array());
+                }
+            }
+
+            //extract eigen values
+            SimpleMatrix diag = Wprime.extractDiag();
+            int diagCols = diag.numCols();
+            int diagRows = diag.numRows();
+            for(int row = 0; row < diagRows; ++row) {
+                for(int col = 0; col < diagCols; ++col) {
+                    float value = (float) diag.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
+                    bin.add(bb.array());
+                    fos.write(bb.array());
+                }
+            }
+
+            //write the V matrix
+
+            int Vcols = Vprime.numCols();
+            int Vrows = Vprime.numRows();
+            for(int row = 0; row < Vrows; ++row) {
+                for(int col = 0; col < Vcols; ++col) {
+                    float value = (float) Vprime.get(row, col);
+                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    bb.putFloat(value);
+                    bin.add(bb.array());
+                    fos.write(bb.array());
+                }
+            }
+
+            fos.close();
+        }
+
+        catch(Exception e) { e.printStackTrace(); }
+
+        long origin_s = width * height * 4;
+        long comp_s = file.length();
+        double comp_rate = (origin_s - comp_s)  * 1.0 / origin_s;
+        System.out.println("Original size: " + origin_s + " bytes." );
+        System.out.println("SVD size: " + comp_s + " bytes");
+        System.out.println("Compression rate: " + (comp_rate * 100) + "%");
     }
 
     public void binarySVDtoPGM(String filePath) {
@@ -511,8 +660,7 @@ public class PGMProcessor {
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
                     short s = bb.getShort();
-                    u[row][col] = ((double)s) / 65535;
-                    System.out.println(s);
+                    u[row][col] = (double) decode(s);
                 }
             }
 
@@ -522,8 +670,7 @@ public class PGMProcessor {
                 fis.read(buffer);
                 ByteBuffer bb = ByteBuffer.wrap(buffer);
                 short s = bb.getShort();
-                diag[i] = (double)s;
-                System.out.println(s);
+                diag[i] = (double) decode(s);
             }
 
             //get the v matrix
@@ -533,8 +680,7 @@ public class PGMProcessor {
                     fis.read(buffer);
                     ByteBuffer bb = ByteBuffer.wrap(buffer);
                     short s = bb.getShort();
-                    v[row][col] = ((double)s) / 65535;
-                    System.out.println(s);
+                    v[row][col] = (double) decode(s);
                 }
             }
         }
@@ -566,12 +712,318 @@ public class PGMProcessor {
         }
     }
 
+    public void binarySVDtoPGM2(String filePath) {
+        //values we're looking for
+        short width = 0;
+        short height = 0;
+        short maxValue = 0;
+        short k = 0;
+        
+        //read in the file
+        File file = new File(filePath);
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(file);
+        }
+        catch (Exception e) {
+            System.err.println("Error opening file.");
+        }
+        //first 2 bytes are the width
+        try {
+            byte[] buffer = new byte[2];
+            fis.read(buffer);
+            ByteBuffer bb = ByteBuffer.wrap(buffer);
+            width = bb.getShort();
+            System.out.println(width);
+        }
+        catch(Exception e) {
+            System.err.println("Failed to get width bytes");
+        }
+        //second 2 bytes are the length
+        try {
+            byte[] buffer = new byte[2];
+            fis.read(buffer);
+            ByteBuffer bb = ByteBuffer.wrap(buffer);
+            height = bb.getShort();
+            System.out.println(height);
+        }
+        catch(Exception e) {
+            System.err.println("Failed to get height bytes");
+        }
+        //next is one byte for the maxvalue
+        try {
+            byte[] buffer = new byte[2];
+            fis.read(buffer);
+            ByteBuffer bb = ByteBuffer.wrap(buffer);
+            maxValue = bb.getShort();
+            System.out.println(maxValue);
+        }
+        catch(Exception e) {
+            System.err.println("Failed to get max value bytes");
+        }
+        try {
+            byte[] buffer = new byte[2];
+            fis.read(buffer);
+            ByteBuffer bb = ByteBuffer.wrap(buffer);
+            k = bb.getShort();
+            System.out.println(k);
+        }
+        catch(Exception e) {
+            System.err.println("Failed to get k value");
+        }
+        
+        int m = height;
+        int n = width;
+        double[][] u = new double[m][k];
+        double[] diag = new double[k];
+        double[][] v = new double[n][k];
+
+        try {
+            //get the values of the u matrix
+            for(int row = 0; row < m; ++row) {
+                for(int col = 0; col < k; ++col) {
+                    byte[] buffer = new byte[4];
+                    fis.read(buffer);
+                    ByteBuffer bb = ByteBuffer.wrap(buffer);
+                    float f = bb.getFloat();
+                    u[row][col] = (double) f;
+                }
+            }
+
+            //get the eigen values for the w matrix
+            for(int i = 0; i < k; ++i) {
+                byte[] buffer = new byte[4];
+                fis.read(buffer);
+                ByteBuffer bb = ByteBuffer.wrap(buffer);
+                float f = bb.getFloat();
+                diag[i] = (double) f;
+            }
+
+            //get the v matrix
+            for(int row = 0; row < n; ++row) {
+                for(int col = 0; col < k; ++col) {
+                    byte[] buffer = new byte[4];
+                    fis.read(buffer);
+                    ByteBuffer bb = ByteBuffer.wrap(buffer);
+                    float f = bb.getFloat();
+                    v[row][col] = (double) f;
+                }
+            }
+        }
+        catch(Exception e) {
+            System.err.println("Error reading matrix values.");
+        }
+
+        SimpleMatrix U = new SimpleMatrix(u);
+        SimpleMatrix W = SimpleMatrix.diag(diag);
+        SimpleMatrix V = new SimpleMatrix(v);
+
+        SimpleMatrix A = U.mult(W).mult(V.transpose());
+
+        int[][] pgm = new int[A.numRows()][A.numCols()];
+        for(int row = 0; row < A.numRows(); ++row) {
+            for(int col = 0; col < A.numCols(); ++col) {
+                int val = (int) Math.round(A.get(row, col));
+                if(val < 0) {
+                    val = 0;
+                }
+                pgm[row][col] = val;
+            }
+        }
+        try {
+            printPGM("image_k.pgm", pgm);
+        }
+        catch(Exception e) { 
+            System.err.println("Failed to write k approx image.");
+        }
+    }
+
+    public int encode(float fval) {
+        int fbits = Float.floatToIntBits( fval );
+        int sign = fbits >>> 16 & 0x8000;          // sign only
+        int val = ( fbits & 0x7fffffff ) + 0x1000; // rounded value
+
+        if( val >= 0x47800000 )               // might be or become NaN/Inf
+        {                                     // avoid Inf due to rounding
+            if( ( fbits & 0x7fffffff ) >= 0x47800000 )
+            {                                 // is or must become NaN/Inf
+                if( val < 0x7f800000 )        // was value but too large
+                    return sign | 0x7c00;     // make it +/-Inf
+                return sign | 0x7c00 |        // remains +/-Inf or NaN
+                    ( fbits & 0x007fffff ) >>> 13; // keep NaN (and Inf) bits
+            }
+            return sign | 0x7bff;             // unrounded not quite Inf
+        }
+        if( val >= 0x38800000 )               // remains normalized value
+            return sign | val - 0x38000000 >>> 13; // exp - 127 + 15
+        if( val < 0x33000000 )                // too small for subnormal
+            return sign;                      // becomes +/-0
+        val = ( fbits & 0x7fffffff ) >>> 23;  // tmp exp for subnormal calc
+        int ret = sign | ( ( fbits & 0x7fffff | 0x800000 ) // add subnormal bit
+             + ( 0x800000 >>> val - 102 )     // round depending on cut off
+          >>> 126 - val );   // div by 2^(1-(exp-127+15)) and >> 13 | exp=0
+
+        System.out.println(ret);
+        return ret;
+    }
+
+    public float decode(int hbits) {
+        int mant = hbits & 0x03ff;            // 10 bits mantissa
+        int exp =  hbits & 0x7c00;            // 5 bits exponent
+        if( exp == 0x7c00 )                   // NaN/Inf
+            exp = 0x3fc00;                    // -> NaN/Inf
+        else if( exp != 0 )                   // normalized value
+        {
+            exp += 0x1c000;                   // exp - 15 + 127
+            if( mant == 0 && exp > 0x1c400 )  // smooth transition
+                return Float.intBitsToFloat( ( hbits & 0x8000 ) << 16
+                                                | exp << 13 | 0x3ff );
+        }
+        else if( mant != 0 )                  // && exp==0 -> subnormal
+        {
+            exp = 0x1c400;                    // make it normal
+            do {
+                mant <<= 1;                   // mantissa * 2
+                exp -= 0x400;                 // decrease exp by 1
+            } while( ( mant & 0x400 ) == 0 ); // while not normal
+            mant &= 0x3ff;                    // discard subnormal bit
+        }                                     // else +/-0 -> +/-0
+        return Float.intBitsToFloat(          // combine all parts
+            ( hbits & 0x8000 ) << 16          // sign  << ( 31 - 15 )
+            | ( exp | mant ) << 13 );         // value << ( 23 - 10 )
+    }
+
+    //adopted from http://javastack.tumblr.com/post/13740168684/extracting-sign-exponent-and-mantissa-from-a
+    public byte[] encode2(float value) {
+
+        BitSet byte1 = new BitSet(7);
+
+        int fbits = Float.floatToIntBits(value);
+        int fsign = fbits >>> 31;
+        int fexp = (fbits >>> 23 & ((1 << 8) - 1)) - ((1 << 7) - 1);
+
+        //get the exponent value as a short
+        short sfexp = (short) fexp;
+        System.out.println(sfexp);
+
+        //get the abs value of exponent
+        //store it in 7 bits
+        //subtract the number and add 1
+
+        BigInteger bexp = new BigInteger( ((Short)sfexp).toString() );
+
+        System.out.println(bexp);
+        BigInteger bias = new BigInteger("63");
+        bexp = bexp.add(bias);
+        String binExpStr = bexp.toString(2);
+
+        BitSet expBits = new BitSet(8);
+
+        //ensure that the binary representation needs less than 7 bits
+        if(binExpStr.length() > 7) {
+            System.err.println("bad things happened");
+        }
+
+        //fill in the bits into the first 7 bits
+        int cnt = 0;
+        for(int i = binExpStr.length() - 1; i >= 0; --i) {
+            System.out.print(binExpStr.charAt(i));
+
+            if(binExpStr.charAt(i) == '1') {
+                expBits.set(cnt);
+            }
+            cnt++;
+        }
+        System.out.println();
+
+        //set the 8th bit if its negative
+        if(fsign == 1) {
+            expBits.set(7);
+        }
+
+        for(int i = 0; i < 8; ++i) {
+            System.out.println("Bit" + i + ":" + expBits.get(i));
+        }
+
+        System.out.println();
+        System.out.println("EXP BITS: " + expBits);
+
+        //store the mantissa
+        int fmantissa = fbits & ((1 << 23) - 1);
+        short smantissa = (short) (fmantissa / 256);
+        System.out.println("MANTISSA: " + fmantissa + " " + smantissa);
+
+        System.out.println(fsign + " " + fexp + " "  + sfexp + " " + fmantissa);
+        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | fmantissa));
+        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | (int)(smantissa * 256)));
+
+        byte[] encode = new byte[3];
+        for (int i=0; i<expBits.length(); i++) {
+            if (expBits.get(i)) {
+                encode[0] |= 1<<(i%8);
+            }
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        buffer.putShort(smantissa);
+        byte[] mantissa_b = buffer.array();
+        encode[1] = mantissa_b[0];
+        encode[2] = mantissa_b[1];
+
+
+        return encode;
+    }
+
+    public float decode2(byte[] bytes) {
+        System.out.println("=====DECODE=====");
+        byte[] expByte = new byte[1];
+        expByte[0] = bytes[0];
+        BitSet expBits = BitSet.valueOf(expByte);
+        System.out.println(expBits);
+
+        //if the sign is negative
+        int fsign = 0;
+        if(expBits.get(7)) {
+            fsign = 1;
+        }
+
+        //recover the exponent
+        String bitStr = "";
+        for(int i = 0; i < 7; ++i) {
+            if(expBits.get(i)) {
+                bitStr = '1' + bitStr;
+            }   
+            else {
+                bitStr = '0' + bitStr;
+            }
+        }
+
+        int fexp = Integer.parseInt(bitStr, 2);
+        fexp -= 63;
+        System.out.println(fexp);
+
+        //mantissa recovery
+        byte[] sbytes = new byte[2];
+        sbytes[0] = bytes[1];
+        sbytes[1] = bytes[2];
+        ByteBuffer bb = ByteBuffer.wrap(sbytes);
+        int mantissa = (int)(bb.getShort()) * 256;
+
+        System.out.println(mantissa);
+        System.out.println(Float.intBitsToFloat((fsign << 31) | (fexp + ((1 << 7) - 1)) << 23 | mantissa));
+
+        return 1;
+    }
+
+
     public static void main(String args[]) {
         PGMProcessor pp = new PGMProcessor();
         int[][] grid = null;
         try {
-            grid = pp.readPGM(args[0]);
-            pp.pgmToSVD(args[0] + "_header.txt", args[0] + ".SVD", grid);
+            // grid = pp.readPGM(args[0]);
+            // pp.pgmToSVD(args[0] + "_header.txt", args[0] + ".SVD", grid);
+            byte[] fval = pp.encode2(240.14f);
+            float decode = pp.decode2(fval);
         } catch(Exception e) { e.printStackTrace(); }
     }
 }
