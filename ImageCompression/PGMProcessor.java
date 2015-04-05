@@ -57,17 +57,15 @@ public class PGMProcessor {
         //convert PGM grid into array of shorts (2 bytes)
 
         //array of 2 byte arrays
-        byte[][] bytes = new byte[picHeight * picWidth][2];
+        byte[] bytes = new byte[picHeight * picWidth];
         int byteNum = bytes.length;
 
         int count = 0; //used for keeping track of num of bytes processed
         for(int i = 0; i < picHeight; ++i) {
             for(int j = 0; j < picWidth; ++j) {
-                ByteBuffer bb = ByteBuffer.allocate(2);
-                short val = (short) grid[i][j];
-                bb.putShort(val);
+                byte val = ((Integer)grid[i][j]).byteValue();
                 if(count < byteNum) {
-                    bytes[count] = bb.array();
+                    bytes[count] = val;
                 }
                 ++count;
             }
@@ -91,7 +89,7 @@ public class PGMProcessor {
             //write the byte representing maxvalue
             fos.write(((Integer)maxvalue).byteValue());
 
-            for(byte[] b : bytes) {
+            for(byte b : bytes) {
                 fos.write(b);
             }
         }
@@ -189,10 +187,8 @@ public class PGMProcessor {
 		//last is a bunch of 2 bytes for the image grid
 		for(int i = 0; i < height; ++i) {
 			for(int j = 0; j < width; ++j) {
-				byte[] buffer = new byte[2];
-				fis.read(buffer);
-				ByteBuffer bb = ByteBuffer.wrap(buffer);
-				grid[i][j] = (int) bb.getShort();
+				
+				grid[i][j] = fis.read();
 			}
 		}
 		
