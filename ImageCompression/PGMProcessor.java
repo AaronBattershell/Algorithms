@@ -101,6 +101,8 @@ public class PGMProcessor {
         finally {
             fos.close();
         }
+
+        System.out.println("Binary size: " + file.length());
     }
 
     // Reads a PGM file 
@@ -124,9 +126,9 @@ public class PGMProcessor {
         picHeight = scan.nextInt();
         maxvalue = scan.nextInt();
 
-        System.out.println(picWidth);
-        System.out.println(picHeight);
-        System.out.println(maxvalue);
+        System.out.println("Width: " + picWidth);
+        System.out.println("Height: " + picHeight);
+        System.out.println("Maxvalue: " + maxvalue);
 
         // read the image data
         int[][] data2D = new int[picHeight][picWidth];
@@ -268,18 +270,6 @@ public class PGMProcessor {
         }
 
         svdWriter.close();
-
-        // System.out.println("A: ");
-        // System.out.println(A);
-
-        // System.out.println("U: ");
-        // System.out.println(U);
-
-        // System.out.println("W: ");
-        // System.out.println(W);
-
-        // System.out.println("V: ");
-        // System.out.println(V);
     }
 
     public void svdPGMApprox(String headerPath, String svdPath, int k) throws Exception {
@@ -329,10 +319,11 @@ public class PGMProcessor {
         SimpleMatrix W = new SimpleMatrix(w);
         SimpleMatrix V = new SimpleMatrix(v);
 
+        //get the 2 norm of the matrix
+
         SimpleMatrix Uprime = U.extractMatrix(0, SimpleMatrix.END, 0, k);
         SimpleMatrix Wprime = W.extractMatrix(0, k, 0, k);
         SimpleMatrix Vprime = V.extractMatrix(0, SimpleMatrix.END, 0, k);
-        SimpleMatrix VTprime = Vprime.transpose();
 
         File file = new File("image_b.pgm.SVD");
         File raw = new File("image_out.SVD.txt");
@@ -370,13 +361,13 @@ public class PGMProcessor {
             //write U first
             int Ucols = Uprime.numCols();
             int Urows = Uprime.numRows();
+            // System.out.println("UCols: " + Ucols + ", Urows: " + Urows);
             for(int row = 0; row < Urows; ++row) {
                 for(int col = 0; col < Ucols; ++col) {
                     //to store a decimal value as a short we multiply by 100000
                     // we know it can never exceed the size of short because vectors are orthogonal
                     // therefore being no larger than 1
                     byte[] value = encode( (float)(Uprime.get(row, col)) );
-                    System.out.println(decode(value));
                     bin.add(value);
                     fos.write(value);
                 }
@@ -386,10 +377,10 @@ public class PGMProcessor {
             SimpleMatrix diag = Wprime.extractDiag();
             int diagCols = diag.numCols();
             int diagRows = diag.numRows();
+            // System.out.println("WCols: " + diagCols + ", Wrows: " + diagRows);
             for(int row = 0; row < diagRows; ++row) {
                 for(int col = 0; col < diagCols; ++col) {
                     byte[] value =  encode( (float)(diag.get(row, col)) );
-                    System.out.println(decode(value));
                     bin.add(value);
                     fos.write(value);
                 }
@@ -399,10 +390,10 @@ public class PGMProcessor {
 
             int Vcols = Vprime.numCols();
             int Vrows = Vprime.numRows();
+            // System.out.println("VCols: " + Vcols + ", Vrows: " + Urows);
             for(int row = 0; row < Vrows; ++row) {
                 for(int col = 0; col < Vcols; ++col) {
                     byte[] value = encode( (float)(Vprime.get(row, col)) );
-                    System.out.println(decode(value));
                     bin.add(value);
                     fos.write(value);
                 }
@@ -413,151 +404,17 @@ public class PGMProcessor {
 
         catch(Exception e) { e.printStackTrace(); }
 
-        long origin_s = width * height * 4;
-        long comp_s = file.length();
-        double comp_rate = (origin_s - comp_s)  * 1.0 / origin_s;
-        System.out.println("Original size: " + origin_s + " bytes." );
-        System.out.println("SVD size: " + comp_s + " bytes");
-        System.out.println("Compression rate: " + (comp_rate * 100) + "%");
-    }
-
-    public void svdPGMApprox2(String headerPath, String svdPath, int k) throws Exception {
-        File headerFile = new File(headerPath);
-        File svdFile = new File(svdPath);
-
-        Scanner sc = new Scanner(headerFile);
-        int width = 0;
-        int height = 0;
-        int maxValue = 0;
-        try {
-            width = sc.nextInt();
-            height = sc.nextInt();
-            maxValue = sc.nextInt();
-        } catch(Exception e) {
-            System.err.println("Invalid header file");
-        }
-
-        sc = new Scanner(svdFile);
-        int m = height;
-        int n = width;
-        //U is an m x m matrix stored first in the file
-        double[][] u = new double[m][m];
-        for(int row = 0; row < m; ++row) {
-            for(int col = 0; col < m; ++col) {
-                u[row][col] = (double) sc.nextFloat();
-            }
-        }
-
-        //W is an m x n matrix stored second in the file
-        double[][] w = new double[m][n];
-        for(int row = 0; row < m; ++row) {
-            for(int col = 0; col < n; ++col) {
-                w[row][col] = (double) sc.nextFloat();
-            }
-        }
-
-        //V is an n x n matrix stored last in the file
-        double[][] v = new double[n][n];
-        for(int row = 0; row < n; ++row) {
-            for(int col = 0; col < n; ++col) {
-                v[row][col] = (double) sc.nextFloat();
-            }
-        }
-
-        SimpleMatrix U = new SimpleMatrix(u);
-        SimpleMatrix W = new SimpleMatrix(w);
-        SimpleMatrix V = new SimpleMatrix(v);
-
-        SimpleMatrix Uprime = U.extractMatrix(0, SimpleMatrix.END, 0, k);
-        SimpleMatrix Wprime = W.extractMatrix(0, k, 0, k);
-        SimpleMatrix Vprime = V.extractMatrix(0, SimpleMatrix.END, 0, k);
-        SimpleMatrix VTprime = Vprime.transpose();
-
-        File file = new File("image_b.pgm.SVD");
-        File raw = new File("image_out.SVD.txt");
-
-        FileOutputStream fos = null;
-
-        ArrayList<byte[]> bin = new ArrayList<byte[]>();
-
-        try {
-            fos = new FileOutputStream(file);
-            //store width
-            ByteBuffer bb = ByteBuffer.allocate(2);
-            bb.putShort((short) width);
-            fos.write(bb.array());
-            //store height
-            bb = ByteBuffer.allocate(2);
-            bb.putShort((short) height);
-            fos.write(bb.array());
-            //store maxvalue
-            bb = ByteBuffer.allocate(2);
-            bb.putShort((short) maxValue);
-            fos.write(bb.array());
-            //store num of eigen values
-            bb = ByteBuffer.allocate(2);
-            bb.putShort((short) k);
-            fos.write(bb.array());
-        } catch(Exception e) { e.printStackTrace(); }
-
-
-        //store array of truncated floats
-        try {
-
-            //write U first
-            int Ucols = Uprime.numCols();
-            int Urows = Uprime.numRows();
-            for(int row = 0; row < Urows; ++row) {
-                for(int col = 0; col < Ucols; ++col) {
-                    // we know it can never exceed the size of short because vectors are orthogonal
-                    // therefore being no larger than 1
-                    float value = (float) Uprime.get(row, col);
-                    ByteBuffer bb = ByteBuffer.allocate(4);
-                    bb.putFloat(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-                }
-            }
-
-            //extract eigen values
-            SimpleMatrix diag = Wprime.extractDiag();
-            int diagCols = diag.numCols();
-            int diagRows = diag.numRows();
-            for(int row = 0; row < diagRows; ++row) {
-                for(int col = 0; col < diagCols; ++col) {
-                    float value = (float) diag.get(row, col);
-                    ByteBuffer bb = ByteBuffer.allocate(4);
-                    bb.putFloat(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-                }
-            }
-
-            //write the V matrix
-
-            int Vcols = Vprime.numCols();
-            int Vrows = Vprime.numRows();
-            for(int row = 0; row < Vrows; ++row) {
-                for(int col = 0; col < Vcols; ++col) {
-                    float value = (float) Vprime.get(row, col);
-                    ByteBuffer bb = ByteBuffer.allocate(4);
-                    bb.putFloat(value);
-                    bin.add(bb.array());
-                    fos.write(bb.array());
-                }
-            }
-
-            fos.close();
-        }
-
-        catch(Exception e) { e.printStackTrace(); }
+        // get the 2 norm
+        // the 2 norm is the eigenvalue at position (k, k)
+        // normally its K+1 but java is 0-based indexing
+        System.out.println("2norm: " + W.get(k, k));
 
         long origin_s = width * height * 4;
         long comp_s = file.length();
         double comp_rate = (origin_s - comp_s)  * 1.0 / origin_s;
-        System.out.println("Original size: " + origin_s + " bytes." );
+        System.out.println("Approx Original size: " + origin_s + " bytes." );
         System.out.println("SVD size: " + comp_s + " bytes");
-        System.out.println("Compression rate: " + (comp_rate * 100) + "%");
+        System.out.println("Approx Compression rate: " + (comp_rate * 100) + "%");
     }
 
     public void binarySVDtoPGM(String filePath) {
@@ -649,132 +506,6 @@ public class PGMProcessor {
                     byte[] buffer = new byte[3];
                     fis.read(buffer);
                     v[row][col] = (double) decode(buffer);
-                }
-            }
-        }
-        catch(Exception e) {
-            System.err.println("Error reading matrix values.");
-        }
-
-        SimpleMatrix U = new SimpleMatrix(u);
-        SimpleMatrix W = SimpleMatrix.diag(diag);
-        SimpleMatrix V = new SimpleMatrix(v);
-
-        SimpleMatrix A = U.mult(W).mult(V.transpose());
-
-        int[][] pgm = new int[A.numRows()][A.numCols()];
-        for(int row = 0; row < A.numRows(); ++row) {
-            for(int col = 0; col < A.numCols(); ++col) {
-                int val = (int) Math.round(A.get(row, col));
-                if(val < 0) {
-                    val = 0;
-                }
-                pgm[row][col] = val;
-            }
-        }
-        try {
-            printPGM("image_k.pgm", pgm);
-        }
-        catch(Exception e) { 
-            System.err.println("Failed to write k approx image.");
-        }
-    }
-
-    public void binarySVDtoPGM2(String filePath) {
-        //values we're looking for
-        short width = 0;
-        short height = 0;
-        short maxValue = 0;
-        short k = 0;
-        
-        //read in the file
-        File file = new File(filePath);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
-        }
-        catch (Exception e) {
-            System.err.println("Error opening file.");
-        }
-        //first 2 bytes are the width
-        try {
-            byte[] buffer = new byte[2];
-            fis.read(buffer);
-            ByteBuffer bb = ByteBuffer.wrap(buffer);
-            width = bb.getShort();
-            System.out.println(width);
-        }
-        catch(Exception e) {
-            System.err.println("Failed to get width bytes");
-        }
-        //second 2 bytes are the length
-        try {
-            byte[] buffer = new byte[2];
-            fis.read(buffer);
-            ByteBuffer bb = ByteBuffer.wrap(buffer);
-            height = bb.getShort();
-            System.out.println(height);
-        }
-        catch(Exception e) {
-            System.err.println("Failed to get height bytes");
-        }
-        //next is one byte for the maxvalue
-        try {
-            byte[] buffer = new byte[2];
-            fis.read(buffer);
-            ByteBuffer bb = ByteBuffer.wrap(buffer);
-            maxValue = bb.getShort();
-            System.out.println(maxValue);
-        }
-        catch(Exception e) {
-            System.err.println("Failed to get max value bytes");
-        }
-        try {
-            byte[] buffer = new byte[2];
-            fis.read(buffer);
-            ByteBuffer bb = ByteBuffer.wrap(buffer);
-            k = bb.getShort();
-            System.out.println(k);
-        }
-        catch(Exception e) {
-            System.err.println("Failed to get k value");
-        }
-        
-        int m = height;
-        int n = width;
-        double[][] u = new double[m][k];
-        double[] diag = new double[k];
-        double[][] v = new double[n][k];
-
-        try {
-            //get the values of the u matrix
-            for(int row = 0; row < m; ++row) {
-                for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[4];
-                    fis.read(buffer);
-                    ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    float f = bb.getFloat();
-                    u[row][col] = (double) f;
-                }
-            }
-
-            //get the eigen values for the w matrix
-            for(int i = 0; i < k; ++i) {
-                byte[] buffer = new byte[4];
-                fis.read(buffer);
-                ByteBuffer bb = ByteBuffer.wrap(buffer);
-                float f = bb.getFloat();
-                diag[i] = (double) f;
-            }
-
-            //get the v matrix
-            for(int row = 0; row < n; ++row) {
-                for(int col = 0; col < k; ++col) {
-                    byte[] buffer = new byte[4];
-                    fis.read(buffer);
-                    ByteBuffer bb = ByteBuffer.wrap(buffer);
-                    float f = bb.getFloat();
-                    v[row][col] = (double) f;
                 }
             }
         }
@@ -933,8 +664,8 @@ public class PGMProcessor {
         PGMProcessor pp = new PGMProcessor();
         int[][] grid = null;
         try {
-            // grid = pp.readPGM(args[0]);
-            // pp.pgmToSVD(args[0] + "_header.txt", args[0] + ".SVD", grid);
+            grid = pp.readPGM(args[0]);
+            pp.pgmToSVD(args[0] + "_header.txt", args[0] + ".SVD", grid);
             // byte[] fval = pp.encode2(-0.0068513555f);
             // float decode = pp.decode2(fval);
         } catch(Exception e) { e.printStackTrace(); }
